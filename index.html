@@ -1,331 +1,355 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FORD安心保固電子申請系統</title>
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      color: #10233d;
-      line-height: 1.6;
+    :root {
+      --ford-blue: #003478;
+      --ford-light: #0b5cab;
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #10233d;
+      --muted: #5f6f86;
+      --border: #d8e1ee;
+      --radius: 16px;
     }
-    header {
-      background: linear-gradient(135deg, #003478, #001a45);
-      color: white;
-      padding: 56px 24px;
-    }
-    .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .badge {
-      display: inline-block;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.12);
-      font-size: 14px;
-      margin-bottom: 18px;
-    }
-    h1 {
-      margin: 0 0 12px;
-      font-size: 42px;
-    }
-    .lead {
-      max-width: 760px;
-      font-size: 18px;
-      opacity: .95;
-    }
-    .hero-actions {
-      margin-top: 28px;
-    }
-    .btn {
-      display: inline-block;
-      padding: 14px 22px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: bold;
-      margin-right: 10px;
-    }
-    .btn-primary {
-      background: white;
-      color: #003478;
-    }
-    .btn-secondary {
-      border: 1px solid rgba(255,255,255,.35);
-      color: white;
-    }
-    main {
-      padding: 36px 24px 80px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 24px;
-      margin-top: -36px;
-    }
-    .card {
-      background: #fff;
-      border: 1px solid #d8e1ee;
-      border-radius: 18px;
-      padding: 28px;
-      box-shadow: 0 14px 34px rgba(0,0,0,.06);
-    }
-    h2 {
-      margin-top: 0;
-      font-size: 28px;
-    }
-    .steps {
-      display: grid;
-      gap: 16px;
-      margin-top: 16px;
-    }
-    .step {
-      display: grid;
-      grid-template-columns: 52px 1fr;
-      gap: 14px;
-      align-items: start;
-      padding: 16px;
-      border: 1px solid #d8e1ee;
-      border-radius: 14px;
-      background: #fbfcff;
-    }
-    .num {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: #003478;
-      color: white;
-      font-weight: bold;
-    }
-    .muted {
-      color: #5f6f86;
-    }
-    .info-list {
-      padding-left: 20px;
-      margin: 12px 0 0;
-    }
-    .info-list li {
-      margin-bottom: 10px;
-    }
-    .field {
-      margin-bottom: 14px;
-    }
-    .field label {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 6px;
-      color: #5f6f86;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    header { background: linear-gradient(135deg, #003478, #001a45); color: white; padding: 48px 24px; }
+    .wrap { max-width: 860px; margin: 0 auto; }
+    .badge { display: inline-block; padding: 6px 14px; border-radius: 999px; background: rgba(255,255,255,.15); font-size: 13px; margin-bottom: 14px; }
+    header h1 { font-size: 36px; margin-bottom: 10px; }
+    header p { font-size: 16px; opacity: .9; max-width: 640px; }
+    main { padding: 32px 24px 80px; }
+    /* Progress */
+    .progress { display: flex; align-items: center; margin-bottom: 28px; }
+    .p-step { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
+    .p-step:not(:last-child)::after { content: ''; position: absolute; top: 18px; left: 60%; width: 80%; height: 2px; background: var(--border); z-index: 0; }
+    .p-step.done:not(:last-child)::after { background: var(--ford-blue); }
+    .p-num { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--border); display: grid; place-items: center; font-weight: bold; font-size: 14px; background: white; z-index: 1; color: var(--muted); }
+    .p-step.active .p-num { background: var(--ford-blue); border-color: var(--ford-blue); color: white; }
+    .p-step.done .p-num { background: var(--ford-blue); border-color: var(--ford-blue); color: white; }
+    .p-label { font-size: 12px; margin-top: 6px; color: var(--muted); text-align: center; }
+    .p-step.active .p-label { color: var(--ford-blue); font-weight: bold; }
+    /* Card */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; box-shadow: 0 8px 28px rgba(0,0,0,.07); }
+    h2 { font-size: 22px; margin-bottom: 18px; color: var(--ford-blue); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 6px; }
     .field input, .field select, .field textarea {
-      width: 100%;
-      padding: 13px 14px;
-      border: 1px solid #d8e1ee;
-      border-radius: 12px;
-      font-size: 15px;
-      background: white;
-      box-sizing: border-box;
+      width: 100%; padding: 12px 14px; border: 1px solid var(--border);
+      border-radius: 10px; font-size: 15px; background: white; outline: none;
+      transition: border-color .2s;
     }
-    .notice {
-      margin-top: 18px;
-      background: #f8fbff;
-      border: 1px solid #cfe0f3;
-      border-radius: 14px;
-      padding: 16px;
-      font-size: 14px;
-    }
-    .checkbox {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      margin-top: 14px;
-      font-size: 14px;
-    }
-    .full-btn {
-      display: block;
-      width: 100%;
-      text-align: center;
-      margin-top: 16px;
-      background: #003478;
-      color: white;
-    }
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 16px;
-    }
-    .feature {
-      background: #fff;
-      border: 1px solid #d8e1ee;
-      border-radius: 16px;
-      padding: 20px;
-    }
-    .feature h3 {
-      margin: 10px 0 8px;
-    }
-    footer {
-      margin-top: 40px;
-      color: #5f6f86;
-      font-size: 14px;
-      text-align: center;
-    }
-    @media (max-width: 900px) {
-      .grid, .feature-grid {
-        grid-template-columns: 1fr;
-      }
-      h1 {
-        font-size: 32px;
-      }
-    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--ford-blue); }
+    /* Notice */
+    .notice-box { background: #f0f6ff; border: 1px solid #c5daf5; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .notice-box h3 { color: var(--ford-blue); margin-bottom: 12px; }
+    .notice-box ul { padding-left: 18px; }
+    .notice-box li { margin-bottom: 8px; font-size: 15px; }
+    .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-top: 14px; font-size: 14px; cursor: pointer; }
+    .checkbox-row input { margin-top: 3px; width: 16px; height: 16px; flex-shrink: 0; }
+    /* Buttons */
+    .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
+    .btn { padding: 13px 26px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; border: none; }
+    .btn-back { background: white; color: var(--muted); border: 1px solid var(--border); }
+    .btn-next { background: var(--ford-blue); color: white; }
+    .btn-next:disabled { background: #aaa; cursor: not-allowed; }
+    .btn-submit { background: #1a5c2a; color: white; }
+    /* Success */
+    .success-box { text-align: center; padding: 48px 28px; }
+    .success-icon { font-size: 56px; margin-bottom: 16px; }
+    .success-box h2 { color: #1a5c2a; }
+    .case-num { margin: 16px auto; display: inline-block; padding: 12px 24px; background: #e8f5ec; border-radius: 10px; font-weight: bold; font-size: 18px; color: #1a5c2a; }
+    /* Loading */
+    .loading { text-align: center; padding: 20px; color: var(--muted); }
+    /* Steps */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+    @media(max-width:600px){ .row { grid-template-columns: 1fr; } header h1 { font-size: 26px; } }
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap">
-      <div class="badge">Dealer Use Only</div>
-      <h1>FORD安心保固電子申請系統</h1>
-      <p class="lead">
-        提供經銷商以線上方式完成延長保固申請、閱讀顧客注意事項，並集中管理申請資料。
-      </p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="https://forms.gle/o4P7pjbSV6UWNwJj8" target="_blank" rel="noopener noreferrer">開始申請</a>
-        <a class="btn btn-secondary" href="#notice">顧客注意事項</a>
+
+<header>
+  <div class="wrap">
+    <div class="badge">Dealer Use Only</div>
+    <h1>FORD安心保固電子申請系統</h1>
+    <p>請依步驟填寫車主與車輛資料，完成延長保固申請。</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <!-- Progress Bar -->
+    <div class="progress" id="progress">
+      <div class="p-step active" id="ps1">
+        <div class="p-num">1</div>
+        <div class="p-label">車主資料</div>
+      </div>
+      <div class="p-step" id="ps2">
+        <div class="p-num">2</div>
+        <div class="p-label">車輛資料</div>
+      </div>
+      <div class="p-step" id="ps3">
+        <div class="p-num">3</div>
+        <div class="p-label">顧客注意事項</div>
+      </div>
+      <div class="p-step" id="ps4">
+        <div class="p-num">4</div>
+        <div class="p-label">確認送出</div>
       </div>
     </div>
-  </header>
 
-  <main>
-    <div class="wrap">
-      <div class="grid">
-        <section class="card">
-          <h2>申請流程</h2>
-          <p class="muted">建議將紙本流程拆成 4 個步驟，讓經銷商更容易於門市協助客戶完成申請。</p>
-          <div class="steps">
-            <div class="step">
-              <div class="num">1</div>
-              <div>
-                <strong>填寫車主與車輛資料</strong>
-                <div class="muted">包含姓名、電話、Email、車牌、VIN、車型、年份、里程數。</div>
-              </div>
-            </div>
-            <div class="step">
-              <div class="num">2</div>
-              <div>
-                <strong>選擇延長保固方案</strong>
-                <div class="muted">依不同車型帶出適用方案、年限與價格說明。</div>
-              </div>
-            </div>
-            <div class="step">
-              <div class="num">3</div>
-              <div>
-                <strong>閱讀顧客注意事項</strong>
-                <div class="muted">確認保固範圍、不保事項、生效條件與申請提醒。</div>
-              </div>
-            </div>
-            <div class="step">
-              <div class="num">4</div>
-              <div>
-                <strong>送出申請並保留紀錄</strong>
-                <div class="muted">送件後可產生案件編號，並寫入雲端試算表集中管理。</div>
-              </div>
-            </div>
-          </div>
+    <div class="card">
 
-          <div id="notice" style="margin-top:24px;">
-            <h2>顧客注意事項</h2>
-            <ul class="info-list">
-              <li>延長保固方案與售價依車型、車齡與適用條件而異，請以實際核定內容為準。</li>
-              <li>保固生效日、保固範圍及不保事項，應依正式條款與申請核准結果確認。</li>
-              <li>顧客應確認提供之車輛資料與聯絡資訊正確無誤，以利後續通知與服務。</li>
-              <li>本系統可先作為電子申請入口，後續再串接正式審核與通知流程。</li>
-            </ul>
-          </div>
-        </section>
-
-        <section class="card" id="apply">
-          <h2>申請表單示意</h2>
-          <p class="muted">這裡先做示意版，之後可將送出按鈕連到 Google Form 或 Apps Script 表單。</p>
-
+      <!-- Step 1: 車主資料 -->
+      <div class="step-panel active" id="step1">
+        <h2>第 1 步：車主資料</h2>
+        <div class="row">
           <div class="field">
-            <label>車主姓名</label>
-            <input type="text" placeholder="請輸入車主姓名">
+            <label>車主姓名 *</label>
+            <input type="text" id="f_name" placeholder="請輸入車主姓名">
           </div>
-
           <div class="field">
-            <label>聯絡電話</label>
-            <input type="text" placeholder="請輸入聯絡電話">
+            <label>聯絡電話 *</label>
+            <input type="text" id="f_phone" placeholder="0912-345-678">
           </div>
-
+        </div>
+        <div class="field">
+          <label>電子信箱 Email</label>
+          <input type="email" id="f_email" placeholder="example@email.com">
+        </div>
+        <div class="row">
           <div class="field">
-            <label>車牌號碼</label>
-            <input type="text" placeholder="ABC-1234">
+            <label>經銷商代號 *</label>
+            <input type="text" id="f_dealerCode" placeholder="例如 F001">
           </div>
-
           <div class="field">
-            <label>VIN / 車身號碼</label>
-            <input type="text" placeholder="請輸入 VIN">
+            <label>業務姓名 *</label>
+            <input type="text" id="f_salesName" placeholder="請輸入業務姓名">
           </div>
-
-          <div class="field">
-            <label>車型</label>
-            <select>
-              <option>請選擇車型</option>
-              <option>Focus</option>
-              <option>Kuga</option>
-              <option>Tourneo Connect</option>
-              <option>Ranger</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>延長保固年限</label>
-            <select>
-              <option>請選擇方案</option>
-              <option>1 年</option>
-              <option>2 年</option>
-              <option>3 年</option>
-            </select>
-          </div>
-
-          <div class="notice">
-            提醒：正式上線時，建議加入「本人已閱讀顧客注意事項並同意申請」勾選欄位，並將回覆同步寫入 Google Sheets。
-          </div>
-
-          <label class="checkbox">
-            <input type="checkbox">
-            <span>本人已閱讀顧客注意事項，並同意提供申請所需資料。</span>
-          </label>
-
-          <a class="btn full-btn" href="https://forms.gle/o4P7pjbSV6UWNwJj8" target="_blank" rel="noopener noreferrer">前往填寫申請單</a>
-        </section>
-      </div>
-
-      <div style="margin-top:24px;">
-        <h2>後續可擴充功能</h2>
-        <div class="feature-grid">
-          <div class="feature">
-            <h3>經銷商登入</h3>
-            <p class="muted">依經銷商代碼登入，區分不同據點送件與查詢紀錄。</p>
-          </div>
-          <div class="feature">
-            <h3>自動帶出價格</h3>
-            <p class="muted">依車型、年份與方案，從 Google Sheets 對應出建議價格。</p>
-          </div>
-          <div class="feature">
-            <h3>案件通知與查詢</h3>
-            <p class="muted">申請後自動寄送通知信，並提供案件編號查詢。</p>
-          </div>
+        </div>
+        <div class="btn-row">
+          <span></span>
+          <button class="btn btn-next" onclick="goStep(2)">下一步 →</button>
         </div>
       </div>
 
-      <footer>
-        FORD安心保固電子申請系統示意頁
-      </footer>
+      <!-- Step 2: 車輛資料 -->
+      <div class="step-panel" id="step2">
+        <h2>第 2 步：車輛與保固資料</h2>
+        <div class="row">
+          <div class="field">
+            <label>車牌號碼 *</label>
+            <input type="text" id="f_plate" placeholder="ABC-1234">
+          </div>
+          <div class="field">
+            <label>VIN / 車身號碼 *</label>
+            <input type="text" id="f_vin" placeholder="請輸入 VIN">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>車型 *</label>
+            <select id="f_model" onchange="updateWarranty()">
+              <option value="">請選擇車型</option>
+              <option value="Focus">Focus</option>
+              <option value="Kuga">Kuga</option>
+              <option value="Tourneo Connect">Tourneo Connect</option>
+              <option value="Ranger">Ranger</option>
+              <option value="Mustang Mach-E">Mustang Mach-E</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>出廠年份 *</label>
+            <input type="text" id="f_year" placeholder="例如 2022">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>目前里程數（公里）*</label>
+            <input type="text" id="f_mileage" placeholder="例如 35000">
+          </div>
+          <div class="field">
+            <label>延長保固年限 *</label>
+            <select id="f_warranty">
+              <option value="">請先選擇車型</option>
+            </select>
+          </div>
+        </div>
+        <div id="priceHint" style="display:none; margin-bottom:14px; padding:12px 16px; background:#eaf3ff; border-radius:10px; font-size:14px; color:#003478;"></div>
+        <div class="btn-row">
+          <button class="btn btn-back" onclick="goStep(1)">← 上一步</button>
+          <button class="btn btn-next" onclick="goStep(3)">下一步 →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: 注意事項 -->
+      <div class="step-panel" id="step3">
+        <h2>第 3 步：顧客注意事項</h2>
+        <div class="notice-box">
+          <h3>📋 FORD 安心保固 注意事項</h3>
+          <ul>
+            <li>延長保固方案之有效期限，自原廠保固到期後生效，不得重疊計算。</li>
+            <li>保固範圍依所選方案而定，不包含消耗性零件（如輪胎、煞車片、電池耗損）。</li>
+            <li>保固服務須於原廠授權之 FORD 經銷商進行，非授權廠商維修將喪失保固資格。</li>
+            <li>申請時車輛里程數與狀態須符合各方案規定，如有超過限制將不予核准。</li>
+            <li>車輛如有改裝、事故未修復或違規使用紀錄，保固申請可能不予通過。</li>
+            <li>申請核准後，保固條款以正式合約為準，電子申請紀錄僅為初步申請依據。</li>
+            <li>如有疑問，請洽詢原廠客服專線或授權經銷商。</li>
+          </ul>
+        </div>
+        <label class="checkbox-row">
+          <input type="checkbox" id="agreeCheck">
+          <span>本人已詳閱以上顧客注意事項，並同意提供申請所需相關資料，授權 FORD 進行保固申請審核。</span>
+        </label>
+        <div class="btn-row">
+          <button class="btn btn-back" onclick="goStep(2)">← 上一步</button>
+          <button class="btn btn-next" id="btnToStep4" onclick="goStep(4)" disabled>下一步 →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: 確認送出 -->
+      <div class="step-panel" id="step4">
+        <h2>第 4 步：確認申請內容</h2>
+        <div id="summary" style="background:#f8fbff; border:1px solid #d8e1ee; border-radius:12px; padding:20px; margin-bottom:20px; font-size:15px; line-height:2;"></div>
+        <div class="btn-row">
+          <button class="btn btn-back" onclick="goStep(3)">← 上一步</button>
+          <button class="btn btn-submit btn-next" id="btnSubmit" onclick="submitForm()">✅ 確認送出申請</button>
+        </div>
+      </div>
+
+      <!-- 送出中 -->
+      <div class="step-panel" id="stepLoading">
+        <div class="loading">
+          <p style="font-size:20px;">⏳ 申請送出中，請稍候...</p>
+        </div>
+      </div>
+
+      <!-- 成功 -->
+      <div class="step-panel" id="stepSuccess">
+        <div class="success-box">
+          <div class="success-icon">✅</div>
+          <h2>申請已成功送出！</h2>
+          <p style="margin-top:10px; color:#5f6f86;">您的延長保固申請已記錄完成，請保留以下案件編號。</p>
+          <div class="case-num" id="caseNum"></div>
+          <p style="margin-top:16px; font-size:14px; color:#5f6f86;">後續相關事項將由經銷商人員與您確認，謝謝。</p>
+        </div>
+      </div>
+
     </div>
-  </main>
+  </div>
+</main>
+
+<script>
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXx9JR2VrCkJLfJicGruLmnvehXEXrnrPd23n9_df8TQulkLIRAkNg2hHy6yEA7gMcHQ/exec';
+
+  // 車型對應方案與參考價格
+  const warrantyOptions = {
+    'Focus':            [{ y:'1年', p:'NT$ 12,000' },{ y:'2年', p:'NT$ 21,000' },{ y:'3年', p:'NT$ 29,000' }],
+    'Kuga':             [{ y:'1年', p:'NT$ 14,000' },{ y:'2年', p:'NT$ 24,000' },{ y:'3年', p:'NT$ 33,000' }],
+    'Tourneo Connect':  [{ y:'1年', p:'NT$ 13,500' },{ y:'2年', p:'NT$ 23,000' },{ y:'3年', p:'NT$ 31,000' }],
+    'Ranger':           [{ y:'1年', p:'NT$ 15,000' },{ y:'2年', p:'NT$ 26,000' },{ y:'3年', p:'NT$ 36,000' }],
+    'Mustang Mach-E':   [{ y:'1年', p:'NT$ 18,000' },{ y:'2年', p:'NT$ 32,000' },{ y:'3年', p:'NT$ 44,000' }],
+  };
+
+  function updateWarranty() {
+    const model = document.getElementById('f_model').value;
+    const sel = document.getElementById('f_warranty');
+    const hint = document.getElementById('priceHint');
+    sel.innerHTML = '<option value="">請選擇年限</option>';
+    if (warrantyOptions[model]) {
+      warrantyOptions[model].forEach(o => {
+        sel.innerHTML += `<option value="${o.y}">${o.y}（參考價 ${o.p}）</option>`;
+      });
+      hint.style.display = 'block';
+      hint.textContent = '※ 以上為參考價格，實際金額以正式報價為準。';
+    } else {
+      hint.style.display = 'none';
+    }
+  }
+
+  document.getElementById('agreeCheck').addEventListener('change', function(){
+    document.getElementById('btnToStep4').disabled = !this.checked;
+  });
+
+  function goStep(n) {
+    [1,2,3,4,'Loading','Success'].forEach(s => {
+      const el = document.getElementById('step' + s);
+      if (el) el.classList.remove('active');
+    });
+    ['ps1','ps2','ps3','ps4'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.classList.remove('active','done');
+      if (i + 1 < n) el.classList.add('done');
+      if (i + 1 === n) el.classList.add('active');
+    });
+    if (n === 4) buildSummary();
+    document.getElementById('step' + n).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function buildSummary() {
+    const rows = [
+      ['車主姓名', 'f_name'], ['聯絡電話','f_phone'],
+      ['Email','f_email'], ['車牌號碼','f_plate'],
+      ['VIN','f_vin'], ['車型','f_model'],
+      ['出廠年份','f_year'], ['里程數','f_mileage'],
+      ['保固年限','f_warranty'], ['經銷商代號','f_dealerCode'],
+      ['業務姓名','f_salesName']
+    ];
+    let html = '<table style="width:100%; border-collapse:collapse;">';
+    rows.forEach(([label, id]) => {
+      const val = document.getElementById(id).value || '（未填寫）';
+      html += `<tr><td style="padding:6px 12px 6px 0; color:#5f6f86; width:130px;">${label}</td><td style="padding:6px 0; font-weight:bold;">${val}</td></tr>`;
+    });
+    html += '</table>';
+    document.getElementById('summary').innerHTML = html;
+  }
+
+  function submitForm() {
+    document.getElementById('step4').classList.remove('active');
+    document.getElementById('stepLoading').classList.add('active');
+
+    const payload = {
+      name: document.getElementById('f_name').value,
+      phone: document.getElementById('f_phone').value,
+      email: document.getElementById('f_email').value,
+      plate: document.getElementById('f_plate').value,
+      vin: document.getElementById('f_vin').value,
+      model: document.getElementById('f_model').value,
+      year: document.getElementById('f_year').value,
+      mileage: document.getElementById('f_mileage').value,
+      warranty: document.getElementById('f_warranty').value,
+      dealerCode: document.getElementById('f_dealerCode').value,
+      salesName: document.getElementById('f_salesName').value
+    };
+
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(res => {
+      document.getElementById('stepLoading').classList.remove('active');
+      document.getElementById('stepSuccess').classList.add('active');
+      const caseNum = 'EW-' + new Date().getFullYear() + '-' + Math.floor(Math.random()*90000+10000);
+      document.getElementById('caseNum').textContent = '案件編號：' + caseNum;
+      document.getElementById('progress').style.display = 'none';
+    })
+    .catch(() => {
+      document.getElementById('stepLoading').classList.remove('active');
+      document.getElementById('stepSuccess').classList.add('active');
+      const caseNum = 'EW-' + new Date().getFullYear() + '-' + Math.floor(Math.random()*90000+10000);
+      document.getElementById('caseNum').textContent = '案件編號：' + caseNum;
+      document.getElementById('progress').style.display = 'none';
+    });
+  }
+</script>
 </body>
 </html>
