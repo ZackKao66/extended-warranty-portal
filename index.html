@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FORD安心保固電子申請系統</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root { --ford-blue:#003478; --bg:#f5f7fb; --card:#ffffff; --text:#10233d; --muted:#5f6f86; --border:#d8e1ee; --radius:16px; }
     *{box-sizing:border-box;margin:0;padding:0;}
@@ -35,16 +36,19 @@
     .notice-box li{margin-bottom:8px;font-size:15px;}
     .checkbox-row{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:14px;cursor:pointer;}
     .checkbox-row input{margin-top:3px;width:16px;height:16px;flex-shrink:0;}
-    .btn-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;}
+    .btn-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:10px;flex-wrap:wrap;}
     .btn{padding:13px 26px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;border:none;}
     .btn-back{background:white;color:var(--muted);border:1px solid var(--border);}
     .btn-next{background:var(--ford-blue);color:white;}
     .btn-next:disabled{background:#aaa;cursor:not-allowed;}
     .btn-submit{background:#1a5c2a;color:white;}
+    .btn-pdf{background:#003478;color:white;}
     .success-box{text-align:center;padding:48px 28px;}
     .success-icon{font-size:56px;margin-bottom:16px;}
     .success-box h2{color:#1a5c2a;}
     .case-num{margin:16px auto;display:inline-block;padding:12px 24px;background:#e8f5ec;border-radius:10px;font-weight:bold;font-size:18px;color:#1a5c2a;}
+    .pdf-section{margin-top:24px;padding:20px;background:#f0f6ff;border:1px solid #c5daf5;border-radius:12px;}
+    .pdf-section p{font-size:14px;color:var(--muted);margin-bottom:14px;}
     .loading{text-align:center;padding:40px;color:var(--muted);}
     .step-panel{display:none;}
     .step-panel.active{display:block;}
@@ -69,6 +73,7 @@
       <div class="p-step" id="ps4"><div class="p-num">4</div><div class="p-label">確認送出</div></div>
     </div>
     <div class="card">
+
       <!-- Step 1 -->
       <div class="step-panel active" id="step1">
         <h2>第 1 步：車主資料</h2>
@@ -84,6 +89,7 @@
         <div id="err1" class="error-msg">請填寫所有必填欄位（*）</div>
         <div class="btn-row"><span></span><button class="btn btn-next" onclick="validateStep1()">下一步 →</button></div>
       </div>
+
       <!-- Step 2 -->
       <div class="step-panel" id="step2">
         <h2>第 2 步：車輛與保固資料</h2>
@@ -115,6 +121,7 @@
           <button class="btn btn-next" onclick="validateStep2()">下一步 →</button>
         </div>
       </div>
+
       <!-- Step 3 -->
       <div class="step-panel" id="step3">
         <h2>第 3 步：顧客注意事項</h2>
@@ -139,6 +146,7 @@
           <button class="btn btn-next" id="btnToStep4" onclick="goStep(4)" disabled>下一步 →</button>
         </div>
       </div>
+
       <!-- Step 4 -->
       <div class="step-panel" id="step4">
         <h2>第 4 步：確認申請內容</h2>
@@ -148,10 +156,12 @@
           <button class="btn btn-submit" onclick="submitForm()">✅ 確認送出申請</button>
         </div>
       </div>
+
       <!-- Loading -->
       <div class="step-panel" id="stepLoading">
         <div class="loading"><p style="font-size:20px;">⏳ 申請送出中，請稍候...</p></div>
       </div>
+
       <!-- Success -->
       <div class="step-panel" id="stepSuccess">
         <div class="success-box">
@@ -160,13 +170,22 @@
           <p style="margin-top:10px;color:#5f6f86;">您的延長保固申請已記錄完成，請保留以下案件編號。</p>
           <div class="case-num" id="caseNum"></div>
           <p style="margin-top:16px;font-size:14px;color:#5f6f86;">後續相關事項將由經銷商人員與您確認，謝謝。</p>
+          <div class="pdf-section">
+            <p>📄 您可以下載本次申請的 PDF 確認單，作為申請紀錄留存。</p>
+            <button class="btn btn-pdf" onclick="downloadPDF()">⬇ 下載 PDF 申請確認單</button>
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 </main>
+
 <script>
   var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXx9JR2VrCkJLfJicGruLmnvehXEXrnrPd23n9_df8TQulkLIRAkNg2hHy6yEA7gMcHQ/exec';
+  var currentCaseNum = '';
+  var formData = {};
+
   var warrantyOptions = {
     'Focus':           [{y:'1年',p:'NT$ 12,000'},{y:'2年',p:'NT$ 21,000'},{y:'3年',p:'NT$ 29,000'}],
     'Kuga':            [{y:'1年',p:'NT$ 14,000'},{y:'2年',p:'NT$ 24,000'},{y:'3年',p:'NT$ 33,000'}],
@@ -174,6 +193,7 @@
     'Ranger':          [{y:'1年',p:'NT$ 15,000'},{y:'2年',p:'NT$ 26,000'},{y:'3年',p:'NT$ 36,000'}],
     'Mustang Mach-E':  [{y:'1年',p:'NT$ 18,000'},{y:'2年',p:'NT$ 32,000'},{y:'3年',p:'NT$ 44,000'}]
   };
+
   function updateWarranty(){
     var model=document.getElementById('f_model').value;
     var sel=document.getElementById('f_warranty');
@@ -184,9 +204,11 @@
       hint.style.display='block';hint.textContent='※ 以上為參考價格，實際金額以正式報價為準。';
     }else{hint.style.display='none';}
   }
+
   document.getElementById('agreeCheck').addEventListener('change',function(){
     document.getElementById('btnToStep4').disabled=!this.checked;
   });
+
   function validateStep1(){
     var n=document.getElementById('f_name').value.trim();
     var p=document.getElementById('f_phone').value.trim();
@@ -195,6 +217,7 @@
     if(!n||!p||!d||!s){document.getElementById('err1').style.display='block';return;}
     document.getElementById('err1').style.display='none';goStep(2);
   }
+
   function validateStep2(){
     var pl=document.getElementById('f_plate').value.trim();
     var v=document.getElementById('f_vin').value.trim();
@@ -205,6 +228,7 @@
     if(!pl||!v||!m||!y||!mi||!w){document.getElementById('err2').style.display='block';return;}
     document.getElementById('err2').style.display='none';goStep(3);
   }
+
   function goStep(n){
     ['1','2','3','4','Loading','Success'].forEach(function(s){
       var el=document.getElementById('step'+s);if(el)el.classList.remove('active');
@@ -219,27 +243,20 @@
     document.getElementById('step'+n).classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
   }
+
   function buildSummary(){
     var rows=[['車主姓名','f_name'],['聯絡電話','f_phone'],['Email','f_email'],['車牌號碼','f_plate'],['VIN','f_vin'],['車型','f_model'],['出廠年份','f_year'],['里程數','f_mileage'],['保固年限','f_warranty'],['經銷商代號','f_dealerCode'],['業務姓名','f_salesName']];
     var html='<table style="width:100%;border-collapse:collapse;">';
     rows.forEach(function(r){
       var val=document.getElementById(r[1]).value||'（未填寫）';
-      html+='<tr><td style="padding:6px 12px 6px 0;color:#5f6f86;width:130px;">'+r[0]+'</td><td style="padding:6px 0;font-weight:bold;">'+val+'</td></tr>';
+      html+='<tr><td style="padding:6px 12px 6px 0;color:#5f6f86;width:140px;">'+r[0]+'</td><td style="padding:6px 0;font-weight:bold;">'+val+'</td></tr>';
     });
     html+='</table>';
     document.getElementById('summary').innerHTML=html;
   }
-  function showSuccess(){
-    document.getElementById('stepLoading').classList.remove('active');
-    document.getElementById('stepSuccess').classList.add('active');
-    var c='EW-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*90000+10000);
-    document.getElementById('caseNum').textContent='案件編號：'+c;
-    document.getElementById('progress').style.display='none';
-  }
-  function submitForm(){
-    document.getElementById('step4').classList.remove('active');
-    document.getElementById('stepLoading').classList.add('active');
-    var payload=JSON.stringify({
+
+  function collectFormData(){
+    formData={
       name:document.getElementById('f_name').value,
       phone:document.getElementById('f_phone').value,
       email:document.getElementById('f_email').value,
@@ -251,12 +268,112 @@
       warranty:document.getElementById('f_warranty').value,
       dealerCode:document.getElementById('f_dealerCode').value,
       salesName:document.getElementById('f_salesName').value
-    });
+    };
+  }
+
+  function showSuccess(){
+    document.getElementById('stepLoading').classList.remove('active');
+    document.getElementById('stepSuccess').classList.add('active');
+    currentCaseNum='EW-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*90000+10000);
+    document.getElementById('caseNum').textContent='案件編號：'+currentCaseNum;
+    document.getElementById('progress').style.display='none';
+  }
+
+  function submitForm(){
+    collectFormData();
+    document.getElementById('step4').classList.remove('active');
+    document.getElementById('stepLoading').classList.add('active');
     var form=new FormData();
-    form.append('data',payload);
+    form.append('data',JSON.stringify(formData));
     fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',body:form})
     .then(function(){showSuccess();})
     .catch(function(){showSuccess();});
+  }
+
+  function downloadPDF(){
+    var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    var W=210, M=20;
+
+    // Header
+    doc.setFillColor(0,52,120);
+    doc.rect(0,0,W,40,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(18);doc.setFont('helvetica','bold');
+    doc.text('FORD Extended Warranty Application',M,17);
+    doc.setFontSize(10);doc.setFont('helvetica','normal');
+    doc.text('FORD An-Xin Extended Warranty - Electronic Application Form',M,27);
+
+    // Case bar
+    doc.setFillColor(26,92,42);
+    doc.rect(0,40,W,14,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(11);doc.setFont('helvetica','bold');
+    doc.text('Case No: '+currentCaseNum,M,50);
+    var now=new Date();
+    var ds=now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate()+' '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+    doc.setFont('helvetica','normal');doc.setFontSize(10);
+    doc.text('Date: '+ds,W-M,50,{align:'right'});
+
+    var y=66;
+    function sectionTitle(t){
+      doc.setTextColor(0,52,120);doc.setFontSize(12);doc.setFont('helvetica','bold');
+      doc.text(t,M,y);y+=2;
+      doc.setDrawColor(0,52,120);doc.setLineWidth(0.4);
+      doc.line(M,y,W-M,y);y+=8;
+    }
+    function row(label,val){
+      doc.setFont('helvetica','normal');doc.setFontSize(10);
+      doc.setTextColor(100,110,130);doc.text(label,M+2,y);
+      doc.setTextColor(16,35,61);doc.setFont('helvetica','bold');
+      doc.text(val||'-',M+58,y);y+=9;
+    }
+
+    sectionTitle('1. Owner Information');
+    row('Owner Name:',formData.name);
+    row('Phone:',formData.phone);
+    row('Email:',formData.email||'-');
+    row('Dealer Code:',formData.dealerCode);
+    row('Sales Person:',formData.salesName);
+
+    y+=4;
+    sectionTitle('2. Vehicle & Warranty Information');
+    row('License Plate:',formData.plate);
+    row('VIN:',formData.vin);
+    row('Model:',formData.model);
+    row('Year:',formData.year);
+    row('Mileage (km):',formData.mileage);
+    row('Warranty Period:',formData.warranty);
+
+    y+=4;
+    sectionTitle('3. Terms & Agreement');
+    var terms=[
+      '1. Warranty takes effect after original factory warranty expires.',
+      '2. Coverage excludes consumable parts (tires, brake pads, battery wear).',
+      '3. Service must be performed at authorized FORD dealers only.',
+      '4. Vehicle mileage must meet plan requirements at time of application.',
+      '5. Modified or accident-damaged vehicles may not be approved.',
+      '6. Official contract terms prevail; this form is the initial application only.',
+      '7. For inquiries, contact FORD customer service or an authorized dealer.'
+    ];
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(60,80,100);
+    terms.forEach(function(t){doc.text(t,M+2,y);y+=7;});
+
+    y+=4;
+    doc.setFillColor(230,245,235);
+    doc.roundedRect(M,y,W-M*2,14,3,3,'F');
+    doc.setTextColor(26,92,42);doc.setFontSize(9);doc.setFont('helvetica','bold');
+    doc.text('[Agreed] I have read and agree to all terms above and authorize FORD to process this application.',M+3,y+9);
+
+    // Footer
+    doc.setFillColor(245,247,251);
+    doc.rect(0,272,W,25,'F');
+    doc.setDrawColor(216,225,238);doc.setLineWidth(0.3);
+    doc.line(0,272,W,272);
+    doc.setTextColor(95,111,134);doc.setFontSize(8);doc.setFont('helvetica','normal');
+    doc.text('FORD Extended Warranty Electronic Application System  |  For Dealer Use Only',W/2,280,{align:'center'});
+    doc.text('This document is system-generated. Case No: '+currentCaseNum+'  |  '+ds,W/2,288,{align:'center'});
+
+    doc.save('FORD-Warranty-'+currentCaseNum+'.pdf');
   }
 </script>
 </body>
