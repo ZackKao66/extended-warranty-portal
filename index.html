@@ -1,14 +1,331 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>延長保固電子申請系統</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FORD安心保固電子申請系統</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #10233d;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #003478, #001a45);
+      color: white;
+      padding: 56px 24px;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: 42px;
+    }
+    .lead {
+      max-width: 760px;
+      font-size: 18px;
+      opacity: .95;
+    }
+    .hero-actions {
+      margin-top: 28px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 14px 22px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .btn-primary {
+      background: white;
+      color: #003478;
+    }
+    .btn-secondary {
+      border: 1px solid rgba(255,255,255,.35);
+      color: white;
+    }
+    main {
+      padding: 36px 24px 80px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 24px;
+      margin-top: -36px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #d8e1ee;
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 14px 34px rgba(0,0,0,.06);
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 28px;
+    }
+    .steps {
+      display: grid;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 16px;
+      border: 1px solid #d8e1ee;
+      border-radius: 14px;
+      background: #fbfcff;
+    }
+    .num {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #003478;
+      color: white;
+      font-weight: bold;
+    }
+    .muted {
+      color: #5f6f86;
+    }
+    .info-list {
+      padding-left: 20px;
+      margin: 12px 0 0;
+    }
+    .info-list li {
+      margin-bottom: 10px;
+    }
+    .field {
+      margin-bottom: 14px;
+    }
+    .field label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: #5f6f86;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #d8e1ee;
+      border-radius: 12px;
+      font-size: 15px;
+      background: white;
+      box-sizing: border-box;
+    }
+    .notice {
+      margin-top: 18px;
+      background: #f8fbff;
+      border: 1px solid #cfe0f3;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 14px;
+    }
+    .checkbox {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: 14px;
+      font-size: 14px;
+    }
+    .full-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin-top: 16px;
+      background: #003478;
+      color: white;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 16px;
+    }
+    .feature {
+      background: #fff;
+      border: 1px solid #d8e1ee;
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .feature h3 {
+      margin: 10px 0 8px;
+    }
+    footer {
+      margin-top: 40px;
+      color: #5f6f86;
+      font-size: 14px;
+      text-align: center;
+    }
+    @media (max-width: 900px) {
+      .grid, .feature-grid {
+        grid-template-columns: 1fr;
+      }
+      h1 {
+        font-size: 32px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>福特安心保固電子申請系統</h1>
-  <p>提供經銷商使用的線上申請入口</p>
-  <p>這是第一版測試頁面</p>
-  <a href="#">開始申請</a>
+  <header>
+    <div class="wrap">
+      <div class="badge">Dealer Use Only</div>
+      <h1>FORD安心保固電子申請系統</h1>
+      <p class="lead">
+        提供經銷商以線上方式完成延長保固申請、閱讀顧客注意事項，並集中管理申請資料。
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#apply">開始申請</a>
+        <a class="btn btn-secondary" href="#notice">顧客注意事項</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="grid">
+        <section class="card">
+          <h2>申請流程</h2>
+          <p class="muted">建議將紙本流程拆成 4 個步驟，讓經銷商更容易於門市協助客戶完成申請。</p>
+          <div class="steps">
+            <div class="step">
+              <div class="num">1</div>
+              <div>
+                <strong>填寫車主與車輛資料</strong>
+                <div class="muted">包含姓名、電話、Email、車牌、VIN、車型、年份、里程數。</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="num">2</div>
+              <div>
+                <strong>選擇延長保固方案</strong>
+                <div class="muted">依不同車型帶出適用方案、年限與價格說明。</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="num">3</div>
+              <div>
+                <strong>閱讀顧客注意事項</strong>
+                <div class="muted">確認保固範圍、不保事項、生效條件與申請提醒。</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="num">4</div>
+              <div>
+                <strong>送出申請並保留紀錄</strong>
+                <div class="muted">送件後可產生案件編號，並寫入雲端試算表集中管理。</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="notice" style="margin-top:24px;">
+            <h2>顧客注意事項</h2>
+            <ul class="info-list">
+              <li>延長保固方案與售價依車型、車齡與適用條件而異，請以實際核定內容為準。</li>
+              <li>保固生效日、保固範圍及不保事項，應依正式條款與申請核准結果確認。</li>
+              <li>顧客應確認提供之車輛資料與聯絡資訊正確無誤，以利後續通知與服務。</li>
+              <li>本系統可先作為電子申請入口，後續再串接正式審核與通知流程。</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="card" id="apply">
+          <h2>申請表單示意</h2>
+          <p class="muted">這裡先做示意版，之後可將送出按鈕連到 Google Form 或 Apps Script 表單。</p>
+
+          <div class="field">
+            <label>車主姓名</label>
+            <input type="text" placeholder="請輸入車主姓名">
+          </div>
+
+          <div class="field">
+            <label>聯絡電話</label>
+            <input type="text" placeholder="請輸入聯絡電話">
+          </div>
+
+          <div class="field">
+            <label>車牌號碼</label>
+            <input type="text" placeholder="ABC-1234">
+          </div>
+
+          <div class="field">
+            <label>VIN / 車身號碼</label>
+            <input type="text" placeholder="請輸入 VIN">
+          </div>
+
+          <div class="field">
+            <label>車型</label>
+            <select>
+              <option>請選擇車型</option>
+              <option>Focus</option>
+              <option>Kuga</option>
+              <option>Tourneo Connect</option>
+              <option>Ranger</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>延長保固年限</label>
+            <select>
+              <option>請選擇方案</option>
+              <option>1 年</option>
+              <option>2 年</option>
+              <option>3 年</option>
+            </select>
+          </div>
+
+          <div class="notice">
+            提醒：正式上線時，建議加入「本人已閱讀顧客注意事項並同意申請」勾選欄位，並將回覆同步寫入 Google Sheets。
+          </div>
+
+          <label class="checkbox">
+            <input type="checkbox">
+            <span>本人已閱讀顧客注意事項，並同意提供申請所需資料。</span>
+          </label>
+
+          <a class="btn full-btn" href="#">送出申請（示意）</a>
+        </section>
+      </div>
+
+      <div style="margin-top:24px;">
+        <h2>後續可擴充功能</h2>
+        <div class="feature-grid">
+          <div class="feature">
+            <h3>經銷商登入</h3>
+            <p class="muted">依經銷商代碼登入，區分不同據點送件與查詢紀錄。</p>
+          </div>
+          <div class="feature">
+            <h3>自動帶出價格</h3>
+            <p class="muted">依車型、年份與方案，從 Google Sheets 對應出建議價格。</p>
+          </div>
+          <div class="feature">
+            <h3>案件通知與查詢</h3>
+            <p class="muted">申請後自動寄送通知信，並提供案件編號查詢。</p>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        FORD安心保固電子申請系統示意頁
+      </footer>
+    </div>
+  </main>
 </body>
 </html>
