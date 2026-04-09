@@ -101,8 +101,8 @@
   <h2>一、車主資料</h2>
   <table class="pt">
     <tr><td>車主姓名</td><td id="p_name"></td><td>聯絡電話</td><td id="p_phone"></td></tr>
-    <tr><td>電子信箱</td><td id="p_email"></td><td>經銷商代號</td><td id="p_dealerCode"></td></tr>
-    <tr><td>業務姓名</td><td id="p_salesName" colspan="3"></td></tr>
+    <tr><td>電子信箱</td><td id="p_email"></td><td>經銷商名稱</td><td id="p_dealerName"></td></tr>
+    <tr><td>銷售人員姓名</td><td id="p_salesName" colspan="3"></td></tr>
   </table>
   <h2>二、車輛與保固資料</h2>
   <table class="pt">
@@ -172,8 +172,24 @@
         </div>
         <div class="field"><label>電子信箱 Email</label><input type="email" id="f_email" placeholder="example@email.com"></div>
         <div class="row">
-          <div class="field"><label>經銷商代號 *</label><input type="text" id="f_dealerCode" placeholder="例如 F001"></div>
-          <div class="field"><label>業務姓名 *</label><input type="text" id="f_salesName" placeholder="請輸入業務姓名"></div>
+          <div class="field"><label>經銷商名稱 *</label><select id="f_dealerName">
+              <option value="">請選擇經銷商</option>
+              <option value="中太汽車">中太汽車</option>
+              <option value="台北九和">台北九和</option>
+              <option value="建富汽車">建富汽車</option>
+              <option value="福祐汽車">福祐汽車</option>
+              <option value="全進汽車">全進汽車</option>
+              <option value="東港汽車">東港汽車</option>
+              <option value="新苗汽車">新苗汽車</option>
+              <option value="台中九和">台中九和</option>
+              <option value="上立汽車">上立汽車</option>
+              <option value="福彰汽車">福彰汽車</option>
+              <option value="瑞特汽車">瑞特汽車</option>
+              <option value="高雄九和">高雄九和</option>
+              <option value="上正汽車">上正汽車</option>
+              <option value="仁福汽車">仁福汽車</option>
+            </select></div>
+          <div class="field"><label>銷售人員姓名 *</label><input type="text" id="f_salesName" placeholder="請輸入銷售人員姓名"></div>
         </div>
         <div id="err1" class="error-msg">請填寫所有必填欄位（*）</div>
         <div class="btn-row"><span></span><button class="btn btn-next" onclick="validateStep1()">下一步 →</button></div>
@@ -183,8 +199,8 @@
       <div class="step-panel" id="step2">
         <h2>第 2 步：車輛與保固資料</h2>
         <div class="row">
-          <div class="field"><label>車牌號碼 *</label><input type="text" id="f_plate" placeholder="ABC-1234"></div>
-          <div class="field"><label>VIN / 車身號碼 *</label><input type="text" id="f_vin" placeholder="請輸入 VIN"></div>
+          <div class="field"><label>車牌號碼</label><input type="text" id="f_plate" placeholder="ABC-1234"></div>
+          <div class="field"><label>VIN / 車身號碼</label><input type="text" id="f_vin" placeholder="請輸入 VIN"></div>
         </div>
         <div class="row">
           <div class="field"><label>車型 *</label>
@@ -202,7 +218,7 @@
           <div class="field"><label>延長保固年限 *</label><select id="f_warranty"><option value="">請先選擇車型</option></select></div>
         </div>
         <div id="priceHint" style="display:none;margin-bottom:14px;padding:12px 16px;background:#eaf3ff;border-radius:10px;font-size:14px;color:#003478;"></div>
-        <div id="err2" class="error-msg">請填寫所有必填欄位（*）</div>
+        <div id="err2" class="error-msg">請選擇車型、填寫出廠年份、里程數與保固年限</div>
         <div class="btn-row">
           <button class="btn btn-back" onclick="goStep(1)">← 上一步</button>
           <button class="btn btn-next" onclick="validateStep2()">下一步 →</button>
@@ -337,11 +353,14 @@ function updateWarranty(){
 }
 function v(id){return document.getElementById(id).value.trim();}
 function validateStep1(){
-  if(!v('f_name')||!v('f_phone')||!v('f_dealerCode')||!v('f_salesName')){document.getElementById('err1').style.display='block';return;}
+  if(!v('f_name')||!v('f_phone')||!document.getElementById('f_dealerName').value||!v('f_salesName')){document.getElementById('err1').style.display='block';return;}
   document.getElementById('err1').style.display='none';goStep(2);
 }
 function validateStep2(){
-  if(!v('f_plate')||!v('f_vin')||!document.getElementById('f_model').value||!v('f_year')||!v('f_mileage')||!document.getElementById('f_warranty').value){document.getElementById('err2').style.display='block';return;}
+  if(!document.getElementById('f_model').value||!v('f_year')||!v('f_mileage')||!document.getElementById('f_warranty').value){document.getElementById('err2').style.display='block';return;}
+  // 車牌/VIN 若未填寫，自動帶入「新車等待配車」
+  if(!v('f_plate')) document.getElementById('f_plate').value='新車等待配車';
+  if(!v('f_vin')) document.getElementById('f_vin').value='新車等待配車';
   document.getElementById('err2').style.display='none';goStep(3);
 }
 function validateStep3(){
@@ -359,7 +378,7 @@ function goStep(n){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function buildSummary(){
-  var rows=[['車主姓名','f_name'],['聯絡電話','f_phone'],['Email','f_email'],['車牌號碼','f_plate'],['VIN','f_vin'],['車型','f_model'],['出廠年份','f_year'],['里程數','f_mileage'],['保固年限','f_warranty'],['經銷商代號','f_dealerCode'],['業務姓名','f_salesName']];
+  var rows=[['車主姓名','f_name'],['聯絡電話','f_phone'],['Email','f_email'],['車牌號碼','f_plate'],['VIN','f_vin'],['車型','f_model'],['出廠年份','f_year'],['里程數','f_mileage'],['保固年限','f_warranty'],['經銷商名稱','f_dealerName'],['銷售人員姓名','f_salesName']];
   var html='<table style="width:100%;border-collapse:collapse;">';
   rows.forEach(function(r){var val=document.getElementById(r[1]).value||'（未填寫）';html+='<tr><td style="padding:6px 12px 6px 0;color:#5f6f86;width:140px;">'+r[0]+'</td><td style="padding:6px 0;font-weight:bold;">'+val+'</td></tr>';});
   html+='</table>';document.getElementById('summary').innerHTML=html;
@@ -373,7 +392,7 @@ function collectFormData(){
     name:v('f_name'),phone:v('f_phone'),email:document.getElementById('f_email').value,
     plate:v('f_plate'),vin:v('f_vin'),model:document.getElementById('f_model').value,
     year:v('f_year'),mileage:v('f_mileage'),warranty:document.getElementById('f_warranty').value,
-    dealerCode:v('f_dealerCode'),salesName:v('f_salesName')
+    dealerName:document.getElementById('f_dealerName').value,salesName:v('f_salesName')
   };
 }
 function showSuccess(sheetOK){
@@ -416,7 +435,7 @@ function downloadPDF(){
   document.getElementById('p_name').textContent=formData.name;
   document.getElementById('p_phone').textContent=formData.phone;
   document.getElementById('p_email').textContent=formData.email||'-';
-  document.getElementById('p_dealerCode').textContent=formData.dealerCode;
+  document.getElementById('p_dealerName').textContent=formData.dealerName;
   document.getElementById('p_salesName').textContent=formData.salesName;
   document.getElementById('p_plate').textContent=formData.plate;
   document.getElementById('p_vin').textContent=formData.vin;
