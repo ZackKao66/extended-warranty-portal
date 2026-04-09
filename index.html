@@ -47,6 +47,7 @@
     .btn-next{background:var(--ford-blue);color:white;}
     .btn-submit{background:#1a5c2a;color:white;}
     .btn-pdf{background:#003478;color:white;margin-top:10px;}
+    .btn-new{background:#e8f0fe;color:#003478;border:1px solid #c5daf5;margin-top:12px;width:100%;}
     .success-box{text-align:center;padding:48px 28px;}
     .success-icon{font-size:56px;margin-bottom:16px;}
     .success-box h2{color:#1a5c2a;}
@@ -70,7 +71,6 @@
 </head>
 <body>
 
-<!-- ===== 列印區塊 ===== -->
 <div id="printArea">
 <style>
   #printArea{font-family:Arial,'Microsoft JhengHei','微軟正黑體',sans-serif;color:#10233d;max-width:780px;margin:0 auto;}
@@ -86,13 +86,14 @@
   .terms-list{font-size:11px;padding-left:16px;}
   .terms-list li{margin-bottom:5px;}
   .agree-box{margin-top:10px;padding:8px 12px;background:#e8f5ec;border:1px solid #a8d5b0;border-radius:4px;font-size:11px;color:#1a5c2a;font-weight:bold;}
-  .sign-area{margin-top:16px;border:1px solid #d8e1ee;border-radius:8px;padding:14px 16px;}
+  .sign-area{margin-top:16px;border:1px solid #d8e1ee;border-radius:8px;padding:14px 16px;position:relative;min-height:170px;}
   .sign-area-title{font-size:12px;color:#5f6f86;margin-bottom:10px;font-weight:bold;}
-  .sign-row{display:flex;gap:32px;flex-wrap:wrap;}
-  .sign-col{flex:1;min-width:180px;}
+  .sign-row{display:flex;gap:32px;}
+  .sign-col{flex:1;}
   .sign-col-label{font-size:11px;color:#5f6f86;margin-bottom:6px;}
   .sign-col img{max-width:100%;max-height:80px;border:1px solid #d8e1ee;border-radius:4px;display:block;}
   .sign-col-line{border-top:1px solid #999;margin-top:70px;font-size:11px;color:#5f6f86;padding-top:4px;}
+  .sign-date-corner{position:absolute;right:14px;bottom:10px;font-size:10px;color:#b5b5b5;}
   .footer-note{text-align:center;font-size:10px;color:#999;border-top:1px solid #eee;padding:10px 24px;margin-top:16px;}
 </style>
 <div class="ph"><h1>FORD 安心保固延長保固申請確認單</h1><p>Ford Extended Warranty Electronic Application Confirmation</p></div>
@@ -104,12 +105,14 @@
     <tr><td>電子信箱</td><td id="p_email"></td><td>經銷商名稱</td><td id="p_dealerName"></td></tr>
     <tr><td>銷售人員姓名</td><td id="p_salesName" colspan="3"></td></tr>
   </table>
+
   <h2>二、車輛與保固資料</h2>
   <table class="pt">
     <tr><td>車牌號碼</td><td id="p_plate"></td><td>VIN車身號碼</td><td id="p_vin"></td></tr>
     <tr><td>車型</td><td id="p_model"></td><td>出廠年份</td><td id="p_year"></td></tr>
     <tr><td>目前里程數</td><td id="p_mileage"></td><td>延長保固年限</td><td id="p_warranty"></td></tr>
   </table>
+
   <h2>三、顧客注意事項</h2>
   <ul class="terms-list">
     <li>延長保固方案之有效期限，自原廠保固到期後生效，不得重疊計算。</li>
@@ -121,6 +124,7 @@
     <li>如有疑問，請洽詢原廠客服專線或授權經銷商。</li>
   </ul>
   <div class="agree-box">☑ 本人已詳閱以上顧客注意事項，並同意提供申請所需相關資料，授權 FORD 進行保固申請審核。</div>
+
   <h2>四、簽名欄</h2>
   <div class="sign-area">
     <div class="sign-area-title">以下簽名欄由當事人親自簽署</div>
@@ -135,17 +139,13 @@
         <img id="p_salesSign" src="" alt="銷售人員簽名" style="display:none;"/>
         <div id="p_salesSignEmpty" class="sign-col-line">銷售人員簽名</div>
       </div>
-      <div class="sign-col">
-        <div class="sign-col-label">申請日期 Date</div>
-        <div class="sign-col-line" id="p_signDate"></div>
-      </div>
     </div>
+    <div class="sign-date-corner" id="p_signDate"></div>
   </div>
 </div>
 <div class="footer-note">本文件由 FORD 安心保固電子申請系統自動產生，僅供申請紀錄使用，正式保固條款以合約為準。Dealer Use Only.</div>
 </div>
 
-<!-- ===== 主介面 ===== -->
 <header>
   <div class="wrap">
     <div class="badge">Dealer Use Only</div>
@@ -153,6 +153,7 @@
     <p>請依步驟填寫車主與車輛資料，完成延長保固申請。</p>
   </div>
 </header>
+
 <main>
   <div class="wrap">
     <div class="progress" id="progress">
@@ -161,9 +162,9 @@
       <div class="p-step" id="ps3"><div class="p-num">3</div><div class="p-label">注意事項</div></div>
       <div class="p-step" id="ps4"><div class="p-num">4</div><div class="p-label">確認送出</div></div>
     </div>
+
     <div class="card">
 
-      <!-- Step 1 -->
       <div class="step-panel active" id="step1">
         <h2>第 1 步：車主資料</h2>
         <div class="row">
@@ -172,7 +173,9 @@
         </div>
         <div class="field"><label>電子信箱 Email</label><input type="email" id="f_email" placeholder="example@email.com"></div>
         <div class="row">
-          <div class="field"><label>經銷商名稱 *</label><select id="f_dealerName">
+          <div class="field">
+            <label>經銷商名稱 *</label>
+            <select id="f_dealerName">
               <option value="">請選擇經銷商</option>
               <option value="中太汽車">中太汽車</option>
               <option value="台北九和">台北九和</option>
@@ -188,26 +191,29 @@
               <option value="高雄九和">高雄九和</option>
               <option value="上正汽車">上正汽車</option>
               <option value="仁福汽車">仁福汽車</option>
-            </select></div>
+            </select>
+          </div>
           <div class="field"><label>銷售人員姓名 *</label><input type="text" id="f_salesName" placeholder="請輸入銷售人員姓名"></div>
         </div>
         <div id="err1" class="error-msg">請填寫所有必填欄位（*）</div>
         <div class="btn-row"><span></span><button class="btn btn-next" onclick="validateStep1()">下一步 →</button></div>
       </div>
 
-      <!-- Step 2 -->
       <div class="step-panel" id="step2">
         <h2>第 2 步：車輛與保固資料</h2>
         <div class="row">
-          <div class="field"><label>車牌號碼</label><input type="text" id="f_plate" placeholder="ABC-1234"></div>
-          <div class="field"><label>VIN / 車身號碼</label><input type="text" id="f_vin" placeholder="請輸入 VIN"></div>
+          <div class="field"><label>車牌號碼</label><input type="text" id="f_plate" placeholder="若無資料可留空"></div>
+          <div class="field"><label>VIN / 車身號碼</label><input type="text" id="f_vin" placeholder="若無資料可留空"></div>
         </div>
         <div class="row">
-          <div class="field"><label>車型 *</label>
+          <div class="field">
+            <label>車型 *</label>
             <select id="f_model" onchange="updateWarranty()">
               <option value="">請選擇車型</option>
-              <option>Focus</option><option>Kuga</option>
-              <option>Tourneo Connect</option><option>Ranger</option>
+              <option>Focus</option>
+              <option>Kuga</option>
+              <option>Tourneo Connect</option>
+              <option>Ranger</option>
               <option>Mustang Mach-E</option>
             </select>
           </div>
@@ -225,7 +231,6 @@
         </div>
       </div>
 
-      <!-- Step 3 -->
       <div class="step-panel" id="step3">
         <h2>第 3 步：顧客注意事項與簽名</h2>
         <div class="notice-box">
@@ -240,22 +245,26 @@
             <li>如有疑問，請洽詢原廠客服專線或授權經銷商。</li>
           </ul>
         </div>
+
         <label class="checkbox-row">
           <input type="checkbox" id="agreeCheck">
           <span>本人已詳閱以上顧客注意事項，並同意提供申請所需相關資料，授權 FORD 進行保固申請審核。</span>
         </label>
+
         <div class="sign-section">
           <h4>✍️ 顧客簽名 *</h4>
           <canvas id="custCanvas" class="sign-pad" width="800" height="130"></canvas>
           <div class="sign-tools"><button class="btn-clear" onclick="clearSign('cust')">清除重簽</button></div>
           <p class="sign-hint">請顧客使用滑鼠或手指在上方區域簽名</p>
         </div>
+
         <div class="sign-section" style="margin-top:16px;">
           <h4>✍️ 銷售人員簽名 *</h4>
           <canvas id="salesCanvas" class="sign-pad" width="800" height="130"></canvas>
           <div class="sign-tools"><button class="btn-clear" onclick="clearSign('sales')">清除重簽</button></div>
           <p class="sign-hint">請銷售人員使用滑鼠或手指在上方區域簽名</p>
         </div>
+
         <div id="err3" class="error-msg">請勾選同意，並完成顧客與銷售人員簽名後再繼續</div>
         <div class="btn-row">
           <button class="btn btn-back" onclick="goStep(2)">← 上一步</button>
@@ -263,7 +272,6 @@
         </div>
       </div>
 
-      <!-- Step 4 -->
       <div class="step-panel" id="step4">
         <h2>第 4 步：確認申請內容</h2>
         <div id="summary" style="background:#f8fbff;border:1px solid #d8e1ee;border-radius:12px;padding:20px;margin-bottom:20px;font-size:15px;line-height:2;"></div>
@@ -274,7 +282,10 @@
       </div>
 
       <div class="step-panel" id="stepLoading">
-        <div class="loading"><p style="font-size:20px;">⏳ 資料送出中，請稍候...</p><p style="margin-top:12px;font-size:14px;color:#5f6f86;">正在寫入 Google Sheet...</p></div>
+        <div class="loading">
+          <p style="font-size:20px;">⏳ 資料送出中，請稍候...</p>
+          <p style="margin-top:12px;font-size:14px;color:#5f6f86;">正在寫入 Google Sheet...</p>
+        </div>
       </div>
 
       <div class="step-panel" id="stepSuccess">
@@ -288,6 +299,7 @@
           <div class="pdf-section">
             <p>📄 點下方按鈕可下載本次申請的中文 PDF 確認單（含顧客及銷售人員簽名）</p>
             <button class="btn btn-pdf" onclick="downloadPDF()">⬇ 下載 PDF 申請確認單</button>
+            <button class="btn btn-new" onclick="resetForm()">📋 註冊新合約</button>
           </div>
         </div>
       </div>
@@ -297,11 +309,7 @@
 </main>
 
 <script>
-// ======================================
-// ▼▼▼ 請將下方 URL 換成您的 Apps Script 網路應用程式 URL ▼▼▼
 var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzo0wPnAruUEYKkfXLRNlSJURUKjT2svqOcNClKd1Ls5oRHCTB3I8Trdycu71DFh4Owhg/exec';
-// ▲▲▲ 只需修改這一行 ▲▲▲
-// ======================================
 
 function getNextSeq(){
   var key='ford_ew_seq';
@@ -316,14 +324,19 @@ var pads={};
 function initPad(id,canvasId){
   var c=document.getElementById(canvasId);
   var ctx=c.getContext('2d');
-  ctx.strokeStyle='#003478';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.strokeStyle='#003478';
+  ctx.lineWidth=2.5;
+  ctx.lineCap='round';
+  ctx.lineJoin='round';
   var drawing=false;
+
   function pt(e){
     var r=c.getBoundingClientRect();
-    var sx=c.width/r.width,sy=c.height/r.height;
+    var sx=c.width/r.width, sy=c.height/r.height;
     if(e.touches)return{x:(e.touches[0].clientX-r.left)*sx,y:(e.touches[0].clientY-r.top)*sy};
     return{x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy};
   }
+
   c.addEventListener('mousedown',function(e){drawing=true;ctx.beginPath();ctx.moveTo(pt(e).x,pt(e).y);});
   c.addEventListener('mousemove',function(e){if(!drawing)return;ctx.lineTo(pt(e).x,pt(e).y);ctx.stroke();pads[id].signed=true;});
   c.addEventListener('mouseup',function(){drawing=false;});
@@ -333,8 +346,16 @@ function initPad(id,canvasId){
   c.addEventListener('touchend',function(){drawing=false;});
   pads[id]={canvas:c,ctx:ctx,signed:false};
 }
-function clearSign(id){pads[id].ctx.clearRect(0,0,pads[id].canvas.width,pads[id].canvas.height);pads[id].signed=false;}
-window.addEventListener('load',function(){initPad('cust','custCanvas');initPad('sales','salesCanvas');});
+
+function clearSign(id){
+  pads[id].ctx.clearRect(0,0,pads[id].canvas.width,pads[id].canvas.height);
+  pads[id].signed=false;
+}
+
+window.addEventListener('load',function(){
+  initPad('cust','custCanvas');
+  initPad('sales','salesCanvas');
+});
 
 var WO={
   'Focus':[{y:'1年',p:'NT$ 12,000'},{y:'2年',p:'NT$ 21,000'},{y:'3年',p:'NT$ 29,000'}],
@@ -343,58 +364,115 @@ var WO={
   'Ranger':[{y:'1年',p:'NT$ 15,000'},{y:'2年',p:'NT$ 26,000'},{y:'3年',p:'NT$ 36,000'}],
   'Mustang Mach-E':[{y:'1年',p:'NT$ 18,000'},{y:'2年',p:'NT$ 32,000'},{y:'3年',p:'NT$ 44,000'}]
 };
+
 function updateWarranty(){
   var m=document.getElementById('f_model').value;
   var sel=document.getElementById('f_warranty');
   var hint=document.getElementById('priceHint');
   sel.innerHTML='<option value="">請選擇年限</option>';
-  if(WO[m]){WO[m].forEach(function(o){sel.innerHTML+='<option value="'+o.y+'">'+o.y+'（參考價 '+o.p+'）</option>';});hint.style.display='block';hint.textContent='※ 以上為參考價格，實際金額以正式報價為準。';}
-  else{hint.style.display='none';}
+  if(WO[m]){
+    WO[m].forEach(function(o){
+      sel.innerHTML+='<option value="'+o.y+'">'+o.y+'（參考價 '+o.p+'）</option>';
+    });
+    hint.style.display='block';
+    hint.textContent='※ 以上為參考價格，實際金額以正式報價為準。';
+  }else{
+    hint.style.display='none';
+  }
 }
+
 function v(id){return document.getElementById(id).value.trim();}
+
 function validateStep1(){
-  if(!v('f_name')||!v('f_phone')||!document.getElementById('f_dealerName').value||!v('f_salesName')){document.getElementById('err1').style.display='block';return;}
-  document.getElementById('err1').style.display='none';goStep(2);
+  if(!v('f_name')||!v('f_phone')||!document.getElementById('f_dealerName').value||!v('f_salesName')){
+    document.getElementById('err1').style.display='block';
+    return;
+  }
+  document.getElementById('err1').style.display='none';
+  goStep(2);
 }
+
 function validateStep2(){
-  if(!document.getElementById('f_model').value||!v('f_year')||!v('f_mileage')||!document.getElementById('f_warranty').value){document.getElementById('err2').style.display='block';return;}
-  // 車牌/VIN 若未填寫，自動帶入「新車等待配車」
+  if(!document.getElementById('f_model').value||!v('f_year')||!v('f_mileage')||!document.getElementById('f_warranty').value){
+    document.getElementById('err2').style.display='block';
+    return;
+  }
   if(!v('f_plate')) document.getElementById('f_plate').value='新車等待配車';
   if(!v('f_vin')) document.getElementById('f_vin').value='新車等待配車';
-  document.getElementById('err2').style.display='none';goStep(3);
+  document.getElementById('err2').style.display='none';
+  goStep(3);
 }
+
 function validateStep3(){
-  if(!document.getElementById('agreeCheck').checked||!pads['cust'].signed||!pads['sales'].signed){document.getElementById('err3').style.display='block';return;}
+  if(!document.getElementById('agreeCheck').checked||!pads['cust'].signed||!pads['sales'].signed){
+    document.getElementById('err3').style.display='block';
+    return;
+  }
   document.getElementById('err3').style.display='none';
   custSignURL=pads['cust'].canvas.toDataURL('image/png');
   salesSignURL=pads['sales'].canvas.toDataURL('image/png');
   goStep(4);
 }
+
 function goStep(n){
-  ['1','2','3','4','Loading','Success'].forEach(function(s){var el=document.getElementById('step'+s);if(el)el.classList.remove('active');});
-  ['ps1','ps2','ps3','ps4'].forEach(function(id,i){var el=document.getElementById(id);el.classList.remove('active','done');if(i+1<n)el.classList.add('done');if(i+1===n)el.classList.add('active');});
+  ['1','2','3','4','Loading','Success'].forEach(function(s){
+    var el=document.getElementById('step'+s);
+    if(el)el.classList.remove('active');
+  });
+  ['ps1','ps2','ps3','ps4'].forEach(function(id,i){
+    var el=document.getElementById(id);
+    el.classList.remove('active','done');
+    if(i+1<n)el.classList.add('done');
+    if(i+1===n)el.classList.add('active');
+  });
   if(n===4)buildSummary();
   document.getElementById('step'+n).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
 function buildSummary(){
-  var rows=[['車主姓名','f_name'],['聯絡電話','f_phone'],['Email','f_email'],['車牌號碼','f_plate'],['VIN','f_vin'],['車型','f_model'],['出廠年份','f_year'],['里程數','f_mileage'],['保固年限','f_warranty'],['經銷商名稱','f_dealerName'],['銷售人員姓名','f_salesName']];
+  var rows=[
+    ['車主姓名','f_name'],
+    ['聯絡電話','f_phone'],
+    ['Email','f_email'],
+    ['車牌號碼','f_plate'],
+    ['VIN','f_vin'],
+    ['車型','f_model'],
+    ['出廠年份','f_year'],
+    ['里程數','f_mileage'],
+    ['保固年限','f_warranty'],
+    ['經銷商名稱','f_dealerName'],
+    ['銷售人員姓名','f_salesName']
+  ];
   var html='<table style="width:100%;border-collapse:collapse;">';
-  rows.forEach(function(r){var val=document.getElementById(r[1]).value||'（未填寫）';html+='<tr><td style="padding:6px 12px 6px 0;color:#5f6f86;width:140px;">'+r[0]+'</td><td style="padding:6px 0;font-weight:bold;">'+val+'</td></tr>';});
-  html+='</table>';document.getElementById('summary').innerHTML=html;
+  rows.forEach(function(r){
+    var val=document.getElementById(r[1]).value||'（未填寫）';
+    html+='<tr><td style="padding:6px 12px 6px 0;color:#5f6f86;width:140px;">'+r[0]+'</td><td style="padding:6px 0;font-weight:bold;">'+val+'</td></tr>';
+  });
+  html+='</table>';
+  document.getElementById('summary').innerHTML=html;
 }
+
 function collectFormData(){
   var now=new Date();
   var ds=now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate();
   formData={
     caseNum:currentCaseNum,
     applyDate:ds,
-    name:v('f_name'),phone:v('f_phone'),email:document.getElementById('f_email').value,
-    plate:v('f_plate'),vin:v('f_vin'),model:document.getElementById('f_model').value,
-    year:v('f_year'),mileage:v('f_mileage'),warranty:document.getElementById('f_warranty').value,
-    dealerName:document.getElementById('f_dealerName').value,salesName:v('f_salesName')
+    name:v('f_name'),
+    phone:v('f_phone'),
+    email:document.getElementById('f_email').value,
+    plate:v('f_plate'),
+    vin:v('f_vin'),
+    model:document.getElementById('f_model').value,
+    year:v('f_year'),
+    mileage:v('f_mileage'),
+    warranty:document.getElementById('f_warranty').value,
+    dealerName:document.getElementById('f_dealerName').value,
+    salesName:v('f_salesName')
   };
 }
+
 function showSuccess(sheetOK){
   document.getElementById('stepLoading').classList.remove('active');
   document.getElementById('stepSuccess').classList.add('active');
@@ -407,14 +485,15 @@ function showSuccess(sheetOK){
     statusEl.innerHTML='<div class="sheet-status sheet-err">⚠️ Google Sheet 寫入失敗，請確認 Apps Script URL 設定是否正確</div>';
   }
 }
+
 function submitForm(){
-  collectFormData();
   currentCaseNum='EW-'+new Date().getFullYear()+'-'+getNextSeq();
+  collectFormData();
   formData.caseNum=currentCaseNum;
+
   document.getElementById('step4').classList.remove('active');
   document.getElementById('stepLoading').classList.add('active');
 
-  // 判斷是否已設定 URL
   if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL===''){
     setTimeout(function(){showSuccess(false);},800);
     return;
@@ -430,6 +509,7 @@ function submitForm(){
 function downloadPDF(){
   var now=new Date();
   var ds=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日';
+
   document.getElementById('p_caseNum').textContent='案件編號：'+currentCaseNum;
   document.getElementById('p_date').textContent='申請日期：'+ds;
   document.getElementById('p_name').textContent=formData.name;
@@ -451,16 +531,73 @@ function downloadPDF(){
   var pending=0;
   function tryPrint(){pending--;if(pending<=0)doPrint();}
 
-  if(custSignURL){ci.src=custSignURL;ci.style.display='block';ce.style.display='none';pending++;if(ci.complete)tryPrint();else ci.onload=tryPrint;}
-  else{ci.style.display='none';ce.style.display='block';}
-  if(salesSignURL){si.src=salesSignURL;si.style.display='block';se.style.display='none';pending++;if(si.complete)tryPrint();else si.onload=tryPrint;}
-  else{si.style.display='none';se.style.display='block';}
+  if(custSignURL){
+    ci.src=custSignURL;
+    ci.style.display='block';
+    ce.style.display='none';
+    pending++;
+    if(ci.complete)tryPrint(); else ci.onload=tryPrint;
+  }else{
+    ci.style.display='none';
+    ce.style.display='block';
+  }
+
+  if(salesSignURL){
+    si.src=salesSignURL;
+    si.style.display='block';
+    se.style.display='none';
+    pending++;
+    if(si.complete)tryPrint(); else si.onload=tryPrint;
+  }else{
+    si.style.display='none';
+    se.style.display='block';
+  }
+
   if(pending===0)doPrint();
 }
+
 function doPrint(){
   document.getElementById('printArea').style.display='block';
   window.print();
-  setTimeout(function(){document.getElementById('printArea').style.display='none';},1500);
+  setTimeout(function(){
+    document.getElementById('printArea').style.display='none';
+  },1500);
+}
+
+function resetForm(){
+  ['f_name','f_phone','f_email','f_plate','f_vin','f_year','f_mileage','f_salesName'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.value='';
+  });
+
+  document.getElementById('f_model').value='';
+  document.getElementById('f_warranty').innerHTML='<option value="">請先選擇車型</option>';
+  document.getElementById('f_dealerName').value='';
+  document.getElementById('agreeCheck').checked=false;
+  document.getElementById('priceHint').style.display='none';
+
+  clearSign('cust');
+  clearSign('sales');
+
+  custSignURL='';
+  salesSignURL='';
+  currentCaseNum='';
+  formData={};
+
+  document.getElementById('progress').style.display='flex';
+  ['ps1','ps2','ps3','ps4'].forEach(function(id,i){
+    var el=document.getElementById(id);
+    el.classList.remove('active','done');
+    if(i===0)el.classList.add('active');
+  });
+
+  ['1','2','3','4','Loading','Success'].forEach(function(s){
+    var el=document.getElementById('step'+s);
+    if(el)el.classList.remove('active');
+  });
+
+  document.getElementById('step1').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 </script>
 </body>
