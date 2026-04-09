@@ -179,7 +179,8 @@
           <div class="field"><label>車主姓名 *</label><input type="text" id="f_name" placeholder="請輸入車主姓名"></div>
           <div class="field"><label>聯絡電話 *</label><input type="text" id="f_phone" placeholder="0912-345-678"></div>
         </div>
-        <div class="field"><label>電子信箱 Email</label><input type="email" id="f_email" placeholder="example@email.com"></div>
+        <!-- ✅ 修改1：Email 改為必填，標籤加上 * -->
+        <div class="field"><label>電子信箱 Email *</label><input type="email" id="f_email" placeholder="example@email.com"></div>
         <div class="row">
           <div class="field">
             <label>經銷商名稱 *</label>
@@ -203,7 +204,7 @@
           </div>
           <div class="field"><label>銷售人員姓名 *</label><input type="text" id="f_salesName" placeholder="請輸入銷售人員姓名"></div>
         </div>
-        <div id="err1" class="error-msg">請填寫所有必填欄位（*）</div>
+        <div id="err1" class="error-msg">請填寫所有必填欄位（*），並確認 Email 格式正確</div>
         <div class="btn-row"><span></span><button class="btn btn-next" onclick="validateStep1()">下一步 →</button></div>
       </div>
 
@@ -390,8 +391,11 @@ function updateWarranty(){
 
 function v(id){return document.getElementById(id).value.trim();}
 
+// ✅ 修改2：validateStep1 加入 Email 必填 + 格式驗證
 function validateStep1(){
-  if(!v('f_name')||!v('f_phone')||!document.getElementById('f_dealerName').value||!v('f_salesName')){
+  var email = v('f_email');
+  var emailValid = email !== '' && email.indexOf('@') !== -1 && email.indexOf('.') !== -1;
+  if(!v('f_name')||!v('f_phone')||!emailValid||!document.getElementById('f_dealerName').value||!v('f_salesName')){
     document.getElementById('err1').style.display='block';
     return;
   }
