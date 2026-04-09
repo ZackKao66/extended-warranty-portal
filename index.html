@@ -61,6 +61,8 @@
     .step-panel{display:none;}
     .step-panel.active{display:block;}
     .error-msg{margin-top:12px;padding:12px 16px;background:#fff0f0;border:1px solid #ffcccc;border-radius:10px;color:#c00;font-size:14px;display:none;}
+    .price-hint{margin-bottom:14px;padding:14px 16px;background:#eaf3ff;border-radius:10px;font-size:14px;color:#003478;border:1px solid #c5daf5;display:none;}
+    .price-hint strong{font-size:16px;}
     #printArea{display:none;}
     @media print{
       body>*{display:none!important;}
@@ -74,11 +76,7 @@
 
 <div id="printArea">
 <style>
-  #printArea{
-    font-family:Arial,'Microsoft JhengHei','微軟正黑體',sans-serif;
-    color:#10233d;
-    width:100%;
-  }
+  #printArea{font-family:Arial,'Microsoft JhengHei','微軟正黑體',sans-serif;color:#10233d;width:100%;}
   #printArea *{box-sizing:border-box;}
   .ph{background:#003478;color:white;padding:10px 16px;}
   .ph h1{font-size:15px;margin:0 0 2px 0;}
@@ -102,25 +100,22 @@
   .sign-date-corner{position:absolute;right:10px;bottom:7px;font-size:9px;color:#c0c0c0;}
   .footer-note{text-align:center;font-size:8.5px;color:#999;border-top:1px solid #eee;padding:5px 14px;margin-top:8px;}
 </style>
-
 <div class="ph"><h1>FORD 安心保固延長保固申請確認單</h1><p>Ford Extended Warranty Electronic Application Confirmation</p></div>
 <div class="pc"><span id="p_caseNum"></span><span id="p_date"></span></div>
-
 <div class="ps">
   <h2>一、車主資料</h2>
   <table class="pt">
     <tr><td>車主姓名</td><td id="p_name"></td><td>聯絡電話</td><td id="p_phone"></td></tr>
     <tr><td>電子信箱</td><td id="p_email"></td><td>經銷商名稱</td><td id="p_dealerName"></td></tr>
-    <tr><td>銷售人員姓名</td><td id="p_salesName" colspan="3"></td></tr>
+    <tr><td>顧客類別</td><td id="p_custType"></td><td>銷售人員姓名</td><td id="p_salesName"></td></tr>
   </table>
-
   <h2>二、車輛與保固資料</h2>
   <table class="pt">
     <tr><td>車牌號碼</td><td id="p_plate"></td><td>VIN車身號碼</td><td id="p_vin"></td></tr>
     <tr><td>車型</td><td id="p_model"></td><td>出廠年份</td><td id="p_year"></td></tr>
-    <tr><td>目前里程數</td><td id="p_mileage"></td><td>延長保固年限</td><td id="p_warranty"></td></tr>
+    <tr><td>車齡月份</td><td id="p_carAge"></td><td>延長保固方案</td><td id="p_warranty"></td></tr>
+    <tr><td>方案費用</td><td id="p_price" colspan="3"></td></tr>
   </table>
-
   <h2>三、顧客注意事項</h2>
   <ul class="terms-list">
     <li>延長保固方案之有效期限，自原廠保固到期後生效，不得重疊計算。</li>
@@ -132,7 +127,6 @@
     <li>如有疑問，請洽詢原廠客服專線或授權經銷商。</li>
   </ul>
   <div class="agree-box">☑ 本人已詳閱以上顧客注意事項，並同意提供申請所需相關資料，授權 FORD 進行保固申請審核。</div>
-
   <h2>四、簽名欄</h2>
   <div class="sign-area">
     <div class="sign-area-title">以下簽名欄由當事人親自簽署</div>
@@ -151,7 +145,6 @@
     <div class="sign-date-corner" id="p_signDate"></div>
   </div>
 </div>
-
 <div class="footer-note">本文件由 FORD 安心保固電子申請系統自動產生，僅供申請紀錄使用，正式保固條款以合約為準。Dealer Use Only.</div>
 </div>
 
@@ -173,13 +166,14 @@
     </div>
 
     <div class="card">
+
+      <!-- Step 1 -->
       <div class="step-panel active" id="step1">
         <h2>第 1 步：車主資料</h2>
         <div class="row">
           <div class="field"><label>車主姓名 *</label><input type="text" id="f_name" placeholder="請輸入車主姓名"></div>
           <div class="field"><label>聯絡電話 *</label><input type="text" id="f_phone" placeholder="0912-345-678"></div>
         </div>
-        <!-- ✅ 修改1：Email 改為必填，標籤加上 * -->
         <div class="field"><label>電子信箱 Email *</label><input type="email" id="f_email" placeholder="example@email.com"></div>
         <div class="row">
           <div class="field">
@@ -204,10 +198,19 @@
           </div>
           <div class="field"><label>銷售人員姓名 *</label><input type="text" id="f_salesName" placeholder="請輸入銷售人員姓名"></div>
         </div>
+        <div class="field">
+          <label>顧客類別 *</label>
+          <select id="f_custType">
+            <option value="">請選擇顧客類別</option>
+            <option value="個人戶">個人戶</option>
+            <option value="非個人戶">非個人戶</option>
+          </select>
+        </div>
         <div id="err1" class="error-msg">請填寫所有必填欄位（*），並確認 Email 格式正確</div>
         <div class="btn-row"><span></span><button class="btn btn-next" onclick="validateStep1()">下一步 →</button></div>
       </div>
 
+      <!-- Step 2 -->
       <div class="step-panel" id="step2">
         <h2>第 2 步：車輛與保固資料</h2>
         <div class="row">
@@ -217,29 +220,52 @@
         <div class="row">
           <div class="field">
             <label>車型 *</label>
-            <select id="f_model" onchange="updateWarranty()">
+            <select id="f_model" onchange="onModelChange()">
               <option value="">請選擇車型</option>
-              <option>Focus</option>
-              <option>Kuga</option>
-              <option>Tourneo Connect</option>
-              <option>Ranger</option>
-              <option>Mustang Mach-E</option>
+              <option value="CX743">Territory</option>
+              <option value="C519">Focus</option>
+              <option value="CX482">Kuga</option>
+              <option value="C519ST">Focus ST</option>
+              <option value="S650_2.3">Mustang 2.3</option>
+              <option value="S650_5.0">Mustang 5.0</option>
+              <option value="P703_Raptor">Ranger Raptor</option>
+              <option value="P703_Diesel">Ranger</option>
+              <option value="V710">旅行家</option>
+              <option value="V761">旅玩家</option>
+              <option value="CX727">Mach-E</option>
             </select>
           </div>
           <div class="field"><label>出廠年份 *</label><input type="text" id="f_year" placeholder="例如 2022"></div>
         </div>
         <div class="row">
-          <div class="field"><label>目前里程數（公里）*</label><input type="text" id="f_mileage" placeholder="例如 35000"></div>
-          <div class="field"><label>延長保固年限 *</label><select id="f_warranty"><option value="">請先選擇車型</option></select></div>
+          <div class="field">
+            <label>車齡月份 *</label>
+            <select id="f_carAge" onchange="updateWarrantyOptions()">
+              <option value="">請選擇車齡</option>
+              <option value="0-3">0 ~ 3 個月</option>
+              <option value="4-12">4 ~ 12 個月</option>
+              <option value="13-30">13 ~ 30 個月</option>
+              <option value="31-36">31 ~ 36 個月</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>延長保固方案 *</label>
+            <select id="f_warranty" onchange="showPrice()">
+              <option value="">請先選擇車型與車齡</option>
+            </select>
+          </div>
         </div>
-        <div id="priceHint" style="display:none;margin-bottom:14px;padding:12px 16px;background:#eaf3ff;border-radius:10px;font-size:14px;color:#003478;"></div>
-        <div id="err2" class="error-msg">請選擇車型、填寫出廠年份、里程數與保固年限</div>
+        <div class="price-hint" id="priceHint">
+          方案費用：<strong id="priceValue"></strong>（參考價格，實際以正式報價為準）
+        </div>
+        <div id="err2" class="error-msg">請填寫所有必填欄位（*）</div>
         <div class="btn-row">
           <button class="btn btn-back" onclick="goStep(1)">← 上一步</button>
           <button class="btn btn-next" onclick="validateStep2()">下一步 →</button>
         </div>
       </div>
 
+      <!-- Step 3 -->
       <div class="step-panel" id="step3">
         <h2>第 3 步：顧客注意事項與簽名</h2>
         <div class="notice-box">
@@ -254,26 +280,22 @@
             <li>如有疑問，請洽詢原廠客服專線或授權經銷商。</li>
           </ul>
         </div>
-
         <label class="checkbox-row">
           <input type="checkbox" id="agreeCheck">
           <span>本人已詳閱以上顧客注意事項，並同意提供申請所需相關資料，授權 FORD 進行保固申請審核。</span>
         </label>
-
         <div class="sign-section">
           <h4>✍️ 顧客簽名 *</h4>
           <canvas id="custCanvas" class="sign-pad" width="800" height="130"></canvas>
           <div class="sign-tools"><button class="btn-clear" onclick="clearSign('cust')">清除重簽</button></div>
           <p class="sign-hint">請顧客使用滑鼠或手指在上方區域簽名</p>
         </div>
-
         <div class="sign-section" style="margin-top:16px;">
           <h4>✍️ 銷售人員簽名 *</h4>
           <canvas id="salesCanvas" class="sign-pad" width="800" height="130"></canvas>
           <div class="sign-tools"><button class="btn-clear" onclick="clearSign('sales')">清除重簽</button></div>
           <p class="sign-hint">請銷售人員使用滑鼠或手指在上方區域簽名</p>
         </div>
-
         <div id="err3" class="error-msg">請勾選同意，並完成顧客與銷售人員簽名後再繼續</div>
         <div class="btn-row">
           <button class="btn btn-back" onclick="goStep(2)">← 上一步</button>
@@ -281,6 +303,7 @@
         </div>
       </div>
 
+      <!-- Step 4 -->
       <div class="step-panel" id="step4">
         <h2>第 4 步：確認申請內容</h2>
         <div id="summary" style="background:#f8fbff;border:1px solid #d8e1ee;border-radius:12px;padding:20px;margin-bottom:20px;font-size:15px;line-height:2;"></div>
@@ -290,6 +313,7 @@
         </div>
       </div>
 
+      <!-- Loading -->
       <div class="step-panel" id="stepLoading">
         <div class="loading">
           <p style="font-size:20px;">⏳ 資料送出中，請稍候...</p>
@@ -297,6 +321,7 @@
         </div>
       </div>
 
+      <!-- Success -->
       <div class="step-panel" id="stepSuccess">
         <div class="success-box">
           <div class="success-icon">✅</div>
@@ -312,12 +337,142 @@
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </main>
 
 <script>
 var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzo0wPnAruUEYKkfXLRNlSJURUKjT2svqOcNClKd1Ls5oRHCTB3I8Trdycu71DFh4Owhg/exec';
+
+// ── 價格資料 ──────────────────────────────────────────
+var prices = {
+  'CX743': {
+    '個人戶': {
+      '0-3':   {'加值型一年':7100,'加值型二年':10700,'加值型三年':14400,'全方位一年':17200,'全方位二年':29250,'全方位三年':38800},
+      '4-12':  {'加值型一年':7400,'加值型二年':11200,'加值型三年':15100,'全方位一年':18100,'全方位二年':30700,'全方位三年':40700},
+      '13-30': {'加值型一年':7900,'加值型二年':11800,'加值型三年':15900,'全方位一年':19000,'全方位二年':32200,'全方位三年':42700},
+      '31-36': {'加值型一年':9000,'加值型二年':13100,'加值型三年':17100,'全方位一年':20000,'全方位二年':32200,'全方位三年':42700}
+    },
+    '非個人戶': {
+      '0-3': {'加值型一年':8500,'加值型二年':12800,'加值型三年':17300,'全方位一年':20600,'全方位二年':35100,'全方位三年':46500}
+    }
+  },
+  'C519': {
+    '個人戶': {
+      '0-3':   {'加值型一年':4200,'加值型二年':5600,'加值型三年':6500,'全方位一年':9900,'全方位二年':16600,'全方位三年':19300},
+      '4-12':  {'加值型一年':4400,'加值型二年':5900,'加值型三年':6850,'全方位一年':10400,'全方位二年':17450,'全方位三年':20250},
+      '13-30': {'加值型一年':4850,'加值型二年':6200,'加值型三年':7200,'全方位一年':10900,'全方位二年':18300,'全方位三年':21250},
+      '31-36': {'加值型一年':5580,'加值型二年':7100,'加值型三年':8000,'全方位一年':11650,'全方位二年':19200,'全方位三年':23000}
+    },
+    '非個人戶': {
+      '0-3': {'加值型一年':5040,'加值型二年':6720,'加值型三年':7800,'全方位一年':11880,'全方位二年':19920,'全方位三年':23160}
+    }
+  },
+  'CX482': {
+    '個人戶': {
+      '0-3':   {'加值型一年':6150,'加值型二年':8200,'加值型三年':10200,'全方位一年':14950,'全方位二年':25350,'全方位三年':33600},
+      '4-12':  {'加值型一年':6450,'加值型二年':8600,'加值型三年':10700,'全方位一年':15700,'全方位二年':26600,'全方位三年':35300},
+      '13-30': {'加值型一年':6850,'加值型二年':9050,'加值型三年':11250,'全方位一年':16500,'全方位二年':27950,'全方位三年':37050},
+      '31-36': {'加值型一年':7800,'加值型二年':10050,'加值型三年':12100,'全方位一年':17350,'全方位二年':29350,'全方位三年':38900}
+    },
+    '非個人戶': {
+      '0-3': {'加值型一年':7400,'加值型二年':9850,'加值型三年':12250,'全方位一年':17950,'全方位二年':30400,'全方位三年':40300}
+    }
+  },
+  'C519ST': {
+    '個人戶': {
+      '0-3':   {'加值型一年':17200,'加值型二年':22050,'加值型三年':26350,'全方位一年':26900,'全方位二年':42000,'全方位三年':50200},
+      '4-12':  {'加值型一年':20000,'加值型二年':24500,'加值型三年':29500,'全方位一年':29900,'全方位二年':43900,'全方位三年':52700},
+      '13-30': {'加值型一年':26000,'加值型二年':30500,'加值型三年':36500,'全方位一年':36900,'全方位二年':50900,'全方位三年':61000},
+      '31-36': {'加值型一年':27300,'加值型二年':32100,'加值型三年':38500,'全方位一年':38800,'全方位二年':53500,'全方位三年':64050}
+    },
+    '非個人戶': {
+      '0-3': {'加值型一年':20640,'加值型二年':26460,'加值型三年':31620,'全方位一年':32280,'全方位二年':50400,'全方位三年':60240}
+    }
+  },
+  'S650_2.3': {
+    '個人戶': {
+      '0-3':   {'加值型一年':14700,'加值型二年':27000,'加值型三年':33000,'全方位一年':34400,'全方位二年':51500,'全方位三年':65000},
+      '4-12':  {'加值型一年':18700,'加值型二年':30500,'加值型三年':36400,'全方位一年':38700,'全方位二年':55000,'全方位三年':68400},
+      '13-30': {'加值型一年':25700,'加值型二年':37500,'加值型三年':45200,'全方位一年':46700,'全方位二年':63200,'全方位三年':76200},
+      '31-36': {'加值型一年':27100,'加值型二年':39500,'加值型三年':47500,'全方位一年':49100,'全方位二年':66400,'全方位三年':80000}
+    }
+  },
+  'S650_5.0': {
+    '個人戶': {
+      '0-3':   {'加值型一年':27800,'加值型二年':52100,'加值型三年':62800,'全方位一年':60600,'全方位二年':98100,'全方位三年':120000},
+      '4-12':  {'加值型一年':29200,'加值型二年':54700,'加值型三年':65900,'全方位一年':63600,'全方位二年':103000,'全方位三年':126000},
+      '13-30': {'加值型一年':30700,'加值型二年':57400,'加值型三年':69200,'全方位一年':66700,'全方位二年':108200,'全方位三年':132300},
+      '31-36': {'加值型一年':32200,'加值型二年':60200,'加值型三年':75000,'全方位一年':70100,'全方位二年':113700,'全方位三年':140900}
+    }
+  },
+  'P703_Raptor': {
+    '個人戶': {
+      '0-3':   {'加值型一年':13300,'加值型二年':25400,'加值型三年':33300,'全方位一年':32700,'全方位二年':48300,'全方位三年':63900},
+      '4-12':  {'加值型一年':16500,'加值型二年':27500,'加值型三年':36300,'全方位一年':35300,'全方位二年':50700,'全方位三年':67100},
+      '13-30': {'加值型一年':23100,'加值型二年':34000,'加值型三年':44700,'全方位一年':43000,'全方位二年':57300,'全方位三年':75600},
+      '31-36': {'加值型一年':24300,'加值型二年':35700,'加值型三年':47300,'全方位一年':45200,'全方位二年':60200,'全方位三年':79500}
+    },
+    '非個人戶': {
+      '0-3': {'加值型一年':18700,'加值型二年':35500,'加值型三年':46700,'全方位一年':45700,'全方位二年':67500,'全方位三年':89300}
+    }
+  },
+  'P703_Diesel': {
+    '個人戶': {
+      '0-3':   {'加值型一年':13300,'加值型二年':25400,'加值型三年':33300,'全方位一年':32700,'全方位二年':48300,'全方位三年':63900},
+      '4-12':  {'加值型一年':16500,'加值型二年':27500,'加值型三年':36300,'全方位一年':35300,'全方位二年':50700,'全方位三年':67100},
+      '13-30': {'加值型一年':23100,'加值型二年':34000,'加值型三年':44700,'全方位一年':43000,'全方位二年':57300,'全方位三年':75600},
+      '31-36': {'加值型一年':24300,'加值型二年':35700,'加值型三年':47300,'全方位一年':45200,'全方位二年':60200,'全方位三年':79500}
+    },
+    '非個人戶': {
+      '0-3': {'加值型一年':18700,'加值型二年':35500,'加值型三年':46700,'全方位一年':45700,'全方位二年':67500,'全方位三年':89300}
+    }
+  },
+  'V710': {
+    '個人戶': {
+      '0-3':   {'加值型一年':25800,'全方位一年':37400},
+      '4-12':  {'加值型一年':29400,'全方位一年':41900},
+      '13-30': {'加值型一年':36900,'全方位一年':50600},
+      '31-36': {'加值型一年':38800,'全方位一年':53200}
+    },
+    '非個人戶': {
+      '0-3': {'加值型一年':36100,'全方位一年':52400}
+    }
+  },
+  'V761': {
+    '個人戶': {
+      '0-3':   {'加值型一年':15850,'加值型二年':19450,'加值型三年':23900,'全方位一年':23600,'全方位二年':35100,'全方位三年':42400},
+      '4-12':  {'加值型一年':18050,'加值型二年':21800,'加值型三年':26300,'全方位一年':26200,'全方位二年':37200,'全方位三年':44950},
+      '13-30': {'加值型一年':22550,'加值型二年':26400,'加值型三年':32100,'全方位一年':31700,'全方位二年':42800,'全方位三年':51700},
+      '31-36': {'加值型一年':23700,'加值型二年':27700,'加值型三年':33700,'全方位一年':33300,'全方位二年':44950,'全方位三年':54300}
+    },
+    '非個人戶': {
+      '0-3': {'加值型一年':26900,'加值型二年':33350,'加值型三年':40650,'全方位一年':40050,'全方位二年':59850,'全方位三年':72100}
+    }
+  },
+  'CX727': {
+    '個人戶': {
+      '0-3':   {'加值型一年':21200,'加值型二年':28200,'加值型三年':35500,'全方位一年':33600,'全方位二年':51900,'全方位三年':65000},
+      '4-12':  {'加值型一年':22300,'加值型二年':29600,'加值型三年':37300,'全方位一年':35300,'全方位二年':54500,'全方位三年':68300},
+      '13-30': {'加值型一年':23500,'加值型二年':31100,'加值型三年':39200,'全方位一年':37100,'全方位二年':57300,'全方位三年':71800},
+      '31-36': {'加值型一年':24700,'加值型二年':32700,'加值型三年':41300,'全方位一年':39000,'全方位二年':60200,'全方位三年':75500}
+    }
+  }
+};
+
+var modelNames = {
+  'CX743':'Territory','C519':'Focus','CX482':'Kuga','C519ST':'Focus ST',
+  'S650_2.3':'Mustang 2.3','S650_5.0':'Mustang 5.0',
+  'P703_Raptor':'Ranger Raptor','P703_Diesel':'Ranger',
+  'V710':'旅行家','V761':'旅玩家','CX727':'Mach-E'
+};
+
+// 無非個人戶的車型
+var noNonPersonal = ['S650_2.3','S650_5.0','CX727'];
+
+var currentCaseNum='', formData={}, custSignURL='', salesSignURL='';
+var pads={};
 
 function getNextSeq(){
   var key='ford_ew_seq';
@@ -326,25 +481,16 @@ function getNextSeq(){
   return String(n).padStart(5,'0');
 }
 
-var currentCaseNum='',formData={},custSignURL='',salesSignURL='';
-var pads={};
-
 function initPad(id,canvasId){
   var c=document.getElementById(canvasId);
   var ctx=c.getContext('2d');
-  ctx.strokeStyle='#003478';
-  ctx.lineWidth=2.5;
-  ctx.lineCap='round';
-  ctx.lineJoin='round';
+  ctx.strokeStyle='#003478';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
   var drawing=false;
-
   function pt(e){
-    var r=c.getBoundingClientRect();
-    var sx=c.width/r.width, sy=c.height/r.height;
+    var r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;
     if(e.touches)return{x:(e.touches[0].clientX-r.left)*sx,y:(e.touches[0].clientY-r.top)*sy};
     return{x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy};
   }
-
   c.addEventListener('mousedown',function(e){drawing=true;ctx.beginPath();ctx.moveTo(pt(e).x,pt(e).y);});
   c.addEventListener('mousemove',function(e){if(!drawing)return;ctx.lineTo(pt(e).x,pt(e).y);ctx.stroke();pads[id].signed=true;});
   c.addEventListener('mouseup',function(){drawing=false;});
@@ -365,37 +511,77 @@ window.addEventListener('load',function(){
   initPad('sales','salesCanvas');
 });
 
-var WO={
-  'Focus':[{y:'1年',p:'NT$ 12,000'},{y:'2年',p:'NT$ 21,000'},{y:'3年',p:'NT$ 29,000'}],
-  'Kuga':[{y:'1年',p:'NT$ 14,000'},{y:'2年',p:'NT$ 24,000'},{y:'3年',p:'NT$ 33,000'}],
-  'Tourneo Connect':[{y:'1年',p:'NT$ 13,500'},{y:'2年',p:'NT$ 23,000'},{y:'3年',p:'NT$ 31,000'}],
-  'Ranger':[{y:'1年',p:'NT$ 15,000'},{y:'2年',p:'NT$ 26,000'},{y:'3年',p:'NT$ 36,000'}],
-  'Mustang Mach-E':[{y:'1年',p:'NT$ 18,000'},{y:'2年',p:'NT$ 32,000'},{y:'3年',p:'NT$ 44,000'}]
-};
+function v(id){return document.getElementById(id).value.trim();}
 
-function updateWarranty(){
-  var m=document.getElementById('f_model').value;
-  var sel=document.getElementById('f_warranty');
-  var hint=document.getElementById('priceHint');
-  sel.innerHTML='<option value="">請選擇年限</option>';
-  if(WO[m]){
-    WO[m].forEach(function(o){
-      sel.innerHTML+='<option value="'+o.y+'">'+o.y+'（參考價 '+o.p+'）</option>';
-    });
-    hint.style.display='block';
-    hint.textContent='※ 以上為參考價格，實際金額以正式報價為準。';
-  }else{
-    hint.style.display='none';
+// 當車型改變時，若顧客類別已選非個人戶但此車型不支援，提示並清空
+function onModelChange(){
+  var model = document.getElementById('f_model').value;
+  var custType = document.getElementById('f_custType').value;
+  if(custType === '非個人戶' && noNonPersonal.indexOf(model) !== -1){
+    alert(modelNames[model] + ' 無非個人戶方案，已自動切換為個人戶。');
+    document.getElementById('f_custType').value = '個人戶';
+  }
+  updateWarrantyOptions();
+}
+
+function updateWarrantyOptions(){
+  var model = document.getElementById('f_model').value;
+  var custType = document.getElementById('f_custType').value;
+  var carAge = document.getElementById('f_carAge').value;
+  var sel = document.getElementById('f_warranty');
+  var hint = document.getElementById('priceHint');
+
+  sel.innerHTML = '<option value="">請選擇方案</option>';
+  hint.style.display = 'none';
+  document.getElementById('priceValue').textContent = '';
+
+  if(!model || !custType || !carAge) return;
+
+  var modelData = prices[model];
+  if(!modelData) return;
+
+  // 非個人戶只有 0-3 方案
+  var typeData = modelData[custType];
+  if(!typeData) {
+    sel.innerHTML = '<option value="">此車型無此顧客類別方案</option>';
+    return;
+  }
+
+  var ageData = typeData[carAge];
+  if(!ageData) {
+    sel.innerHTML = '<option value="">此車齡無可用方案</option>';
+    return;
+  }
+
+  Object.keys(ageData).forEach(function(plan){
+    var price = ageData[plan];
+    sel.innerHTML += '<option value="' + plan + '">' + plan + '（NT$ ' + price.toLocaleString() + '）</option>';
+  });
+}
+
+function showPrice(){
+  var model = document.getElementById('f_model').value;
+  var custType = document.getElementById('f_custType').value;
+  var carAge = document.getElementById('f_carAge').value;
+  var plan = document.getElementById('f_warranty').value;
+  var hint = document.getElementById('priceHint');
+
+  if(!model || !custType || !carAge || !plan){
+    hint.style.display = 'none';
+    return;
+  }
+
+  var p = prices[model][custType][carAge][plan];
+  if(p){
+    document.getElementById('priceValue').textContent = 'NT$ ' + p.toLocaleString();
+    hint.style.display = 'block';
   }
 }
 
-function v(id){return document.getElementById(id).value.trim();}
-
-// ✅ 修改2：validateStep1 加入 Email 必填 + 格式驗證
 function validateStep1(){
   var email = v('f_email');
   var emailValid = email !== '' && email.indexOf('@') !== -1 && email.indexOf('.') !== -1;
-  if(!v('f_name')||!v('f_phone')||!emailValid||!document.getElementById('f_dealerName').value||!v('f_salesName')){
+  if(!v('f_name')||!v('f_phone')||!emailValid||!document.getElementById('f_dealerName').value||!v('f_salesName')||!document.getElementById('f_custType').value){
     document.getElementById('err1').style.display='block';
     return;
   }
@@ -404,7 +590,11 @@ function validateStep1(){
 }
 
 function validateStep2(){
-  if(!document.getElementById('f_model').value||!v('f_year')||!v('f_mileage')||!document.getElementById('f_warranty').value){
+  var model = document.getElementById('f_model').value;
+  var carAge = document.getElementById('f_carAge').value;
+  var warranty = document.getElementById('f_warranty').value;
+  var year = v('f_year');
+  if(!model || !carAge || !warranty || !year){
     document.getElementById('err2').style.display='block';
     return;
   }
@@ -441,24 +631,38 @@ function goStep(n){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
+function getSelectedPrice(){
+  var model = document.getElementById('f_model').value;
+  var custType = document.getElementById('f_custType').value;
+  var carAge = document.getElementById('f_carAge').value;
+  var plan = document.getElementById('f_warranty').value;
+  if(!model||!custType||!carAge||!plan) return '-';
+  var p = prices[model] && prices[model][custType] && prices[model][custType][carAge] && prices[model][custType][carAge][plan];
+  return p ? 'NT$ ' + p.toLocaleString() : '-';
+}
+
 function buildSummary(){
+  var modelCode = document.getElementById('f_model').value;
+  var modelDisplay = modelNames[modelCode] || modelCode;
+  var carAgeMap = {'0-3':'0~3個月','4-12':'4~12個月','13-30':'13~30個月','31-36':'31~36個月'};
   var rows=[
-    ['車主姓名','f_name'],
-    ['聯絡電話','f_phone'],
-    ['Email','f_email'],
-    ['車牌號碼','f_plate'],
-    ['VIN','f_vin'],
-    ['車型','f_model'],
-    ['出廠年份','f_year'],
-    ['里程數','f_mileage'],
-    ['保固年限','f_warranty'],
-    ['經銷商名稱','f_dealerName'],
-    ['銷售人員姓名','f_salesName']
+    ['車主姓名', v('f_name')],
+    ['聯絡電話', v('f_phone')],
+    ['Email', document.getElementById('f_email').value],
+    ['顧客類別', document.getElementById('f_custType').value],
+    ['車牌號碼', v('f_plate')],
+    ['VIN', v('f_vin')],
+    ['車型', modelDisplay],
+    ['出廠年份', v('f_year')],
+    ['車齡月份', carAgeMap[document.getElementById('f_carAge').value]||''],
+    ['保固方案', document.getElementById('f_warranty').value],
+    ['方案費用', getSelectedPrice()],
+    ['經銷商名稱', document.getElementById('f_dealerName').value],
+    ['銷售人員姓名', v('f_salesName')]
   ];
   var html='<table style="width:100%;border-collapse:collapse;">';
   rows.forEach(function(r){
-    var val=document.getElementById(r[1]).value||'（未填寫）';
-    html+='<tr><td style="padding:6px 12px 6px 0;color:#5f6f86;width:140px;">'+r[0]+'</td><td style="padding:6px 0;font-weight:bold;">'+val+'</td></tr>';
+    html+='<tr><td style="padding:6px 12px 6px 0;color:#5f6f86;width:140px;">'+r[0]+'</td><td style="padding:6px 0;font-weight:bold;">'+r[1]+'</td></tr>';
   });
   html+='</table>';
   document.getElementById('summary').innerHTML=html;
@@ -467,18 +671,23 @@ function buildSummary(){
 function collectFormData(){
   var now=new Date();
   var ds=now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate();
+  var modelCode = document.getElementById('f_model').value;
+  var carAgeMap = {'0-3':'0~3個月','4-12':'4~12個月','13-30':'13~30個月','31-36':'31~36個月'};
   formData={
     caseNum:currentCaseNum,
     applyDate:ds,
     name:v('f_name'),
     phone:v('f_phone'),
     email:document.getElementById('f_email').value,
+    custType:document.getElementById('f_custType').value,
     plate:v('f_plate'),
     vin:v('f_vin'),
-    model:document.getElementById('f_model').value,
+    modelCode:modelCode,
+    model:modelNames[modelCode]||modelCode,
     year:v('f_year'),
-    mileage:v('f_mileage'),
+    carAge:carAgeMap[document.getElementById('f_carAge').value]||document.getElementById('f_carAge').value,
     warranty:document.getElementById('f_warranty').value,
+    price:getSelectedPrice(),
     dealerName:document.getElementById('f_dealerName').value,
     salesName:v('f_salesName')
   };
@@ -490,26 +699,21 @@ function showSuccess(sheetOK){
   document.getElementById('caseNum').textContent='案件編號：'+currentCaseNum;
   document.getElementById('progress').style.display='none';
   var statusEl=document.getElementById('sheetStatus');
-  if(sheetOK){
-    statusEl.innerHTML='<div class="sheet-status sheet-ok">✅ 資料已成功寫入 Google Sheet</div>';
-  }else{
-    statusEl.innerHTML='<div class="sheet-status sheet-err">⚠️ Google Sheet 寫入失敗，請確認 Apps Script URL 設定是否正確</div>';
-  }
+  statusEl.innerHTML = sheetOK
+    ? '<div class="sheet-status sheet-ok">✅ 資料已成功寫入 Google Sheet</div>'
+    : '<div class="sheet-status sheet-err">⚠️ Google Sheet 寫入失敗，請確認 Apps Script URL 設定是否正確</div>';
 }
 
 function submitForm(){
   currentCaseNum='EW-'+new Date().getFullYear()+'-'+getNextSeq();
   collectFormData();
   formData.caseNum=currentCaseNum;
-
   document.getElementById('step4').classList.remove('active');
   document.getElementById('stepLoading').classList.add('active');
-
   if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL===''){
     setTimeout(function(){showSuccess(false);},800);
     return;
   }
-
   var form=new FormData();
   form.append('data',JSON.stringify(formData));
   fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',body:form})
@@ -520,50 +724,31 @@ function submitForm(){
 function downloadPDF(){
   var now=new Date();
   var ds=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日';
-
   document.getElementById('p_caseNum').textContent='案件編號：'+currentCaseNum;
   document.getElementById('p_date').textContent='申請日期：'+ds;
   document.getElementById('p_name').textContent=formData.name;
   document.getElementById('p_phone').textContent=formData.phone;
   document.getElementById('p_email').textContent=formData.email||'-';
+  document.getElementById('p_custType').textContent=formData.custType;
   document.getElementById('p_dealerName').textContent=formData.dealerName;
   document.getElementById('p_salesName').textContent=formData.salesName;
   document.getElementById('p_plate').textContent=formData.plate;
   document.getElementById('p_vin').textContent=formData.vin;
   document.getElementById('p_model').textContent=formData.model;
   document.getElementById('p_year').textContent=formData.year;
-  document.getElementById('p_mileage').textContent=formData.mileage+' km';
+  document.getElementById('p_carAge').textContent=formData.carAge;
   document.getElementById('p_warranty').textContent=formData.warranty;
+  document.getElementById('p_price').textContent=formData.price;
   document.getElementById('p_signDate').textContent=ds;
 
   var ci=document.getElementById('p_custSign'),ce=document.getElementById('p_custSignEmpty');
   var si=document.getElementById('p_salesSign'),se=document.getElementById('p_salesSignEmpty');
-
   var pending=0;
   function tryPrint(){pending--;if(pending<=0)doPrint();}
-
-  if(custSignURL){
-    ci.src=custSignURL;
-    ci.style.display='block';
-    ce.style.display='none';
-    pending++;
-    if(ci.complete)tryPrint(); else ci.onload=tryPrint;
-  }else{
-    ci.style.display='none';
-    ce.style.display='block';
-  }
-
-  if(salesSignURL){
-    si.src=salesSignURL;
-    si.style.display='block';
-    se.style.display='none';
-    pending++;
-    if(si.complete)tryPrint(); else si.onload=tryPrint;
-  }else{
-    si.style.display='none';
-    se.style.display='block';
-  }
-
+  if(custSignURL){ci.src=custSignURL;ci.style.display='block';ce.style.display='none';pending++;if(ci.complete)tryPrint();else ci.onload=tryPrint;}
+  else{ci.style.display='none';ce.style.display='block';}
+  if(salesSignURL){si.src=salesSignURL;si.style.display='block';se.style.display='none';pending++;if(si.complete)tryPrint();else si.onload=tryPrint;}
+  else{si.style.display='none';se.style.display='block';}
   if(pending===0)doPrint();
 }
 
@@ -571,57 +756,33 @@ function doPrint(){
   var pa=document.getElementById('printArea');
   pa.style.display='block';
   var w=window.innerWidth||screen.width;
-
-  if(w<768){
-    pa.style.transform='scale(0.70)';
-    pa.style.transformOrigin='top left';
-    pa.style.width='143%';
-  }else{
-    pa.style.transform='';
-    pa.style.width='100%';
-  }
-
+  if(w<768){pa.style.transform='scale(0.70)';pa.style.transformOrigin='top left';pa.style.width='143%';}
+  else{pa.style.transform='';pa.style.width='100%';}
   window.print();
-
-  setTimeout(function(){
-    pa.style.display='none';
-    pa.style.transform='';
-    pa.style.width='';
-  },1500);
+  setTimeout(function(){pa.style.display='none';pa.style.transform='';pa.style.width='';},1500);
 }
 
 function resetForm(){
-  ['f_name','f_phone','f_email','f_plate','f_vin','f_year','f_mileage','f_salesName'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el) el.value='';
+  ['f_name','f_phone','f_email','f_plate','f_vin','f_year','f_salesName'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
   });
-
-  document.getElementById('f_model').value='';
-  document.getElementById('f_warranty').innerHTML='<option value="">請先選擇車型</option>';
-  document.getElementById('f_dealerName').value='';
+  ['f_model','f_custType','f_carAge','f_dealerName'].forEach(function(id){
+    document.getElementById(id).value='';
+  });
+  document.getElementById('f_warranty').innerHTML='<option value="">請先選擇車型與車齡</option>';
   document.getElementById('agreeCheck').checked=false;
   document.getElementById('priceHint').style.display='none';
-
-  clearSign('cust');
-  clearSign('sales');
-
-  custSignURL='';
-  salesSignURL='';
-  currentCaseNum='';
-  formData={};
-
+  clearSign('cust');clearSign('sales');
+  custSignURL='';salesSignURL='';currentCaseNum='';formData={};
   document.getElementById('progress').style.display='flex';
   ['ps1','ps2','ps3','ps4'].forEach(function(id,i){
     var el=document.getElementById(id);
     el.classList.remove('active','done');
     if(i===0)el.classList.add('active');
   });
-
   ['1','2','3','4','Loading','Success'].forEach(function(s){
-    var el=document.getElementById('step'+s);
-    if(el)el.classList.remove('active');
+    var el=document.getElementById('step'+s);if(el)el.classList.remove('active');
   });
-
   document.getElementById('step1').classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
