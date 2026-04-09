@@ -65,6 +65,7 @@
     @media print{
       body>*{display:none!important;}
       #printArea{display:block!important;position:static!important;}
+      @page{size:A4 portrait;margin:8mm 10mm;}
     }
     @media(max-width:600px){.row{grid-template-columns:1fr;}header h1{font-size:26px;}}
   </style>
@@ -73,31 +74,38 @@
 
 <div id="printArea">
 <style>
-  #printArea{font-family:Arial,'Microsoft JhengHei','微軟正黑體',sans-serif;color:#10233d;max-width:780px;margin:0 auto;}
-  .ph{background:#003478;color:white;padding:18px 24px;}
-  .ph h1{font-size:20px;margin:0 0 4px 0;}
-  .ph p{font-size:11px;margin:0;opacity:.9;}
-  .pc{background:#1a5c2a;color:white;padding:10px 24px;display:flex;justify-content:space-between;font-size:12px;margin-bottom:16px;}
-  .ps{padding:0 24px 16px;}
-  .ps h2{font-size:14px;color:#003478;border-bottom:2px solid #003478;padding-bottom:4px;margin:16px 0 10px;}
-  .pt{width:100%;border-collapse:collapse;font-size:12px;}
-  .pt td{padding:5px 8px;border:1px solid #d8e1ee;}
-  .pt td:first-child{color:#5f6f86;width:120px;background:#f8fbff;}
-  .terms-list{font-size:11px;padding-left:16px;}
-  .terms-list li{margin-bottom:5px;}
-  .agree-box{margin-top:10px;padding:8px 12px;background:#e8f5ec;border:1px solid #a8d5b0;border-radius:4px;font-size:11px;color:#1a5c2a;font-weight:bold;}
-  .sign-area{margin-top:16px;border:1px solid #d8e1ee;border-radius:8px;padding:14px 16px;position:relative;min-height:170px;}
-  .sign-area-title{font-size:12px;color:#5f6f86;margin-bottom:10px;font-weight:bold;}
-  .sign-row{display:flex;gap:32px;}
+  #printArea{
+    font-family:Arial,'Microsoft JhengHei','微軟正黑體',sans-serif;
+    color:#10233d;
+    width:100%;
+  }
+  #printArea *{box-sizing:border-box;}
+  .ph{background:#003478;color:white;padding:10px 16px;}
+  .ph h1{font-size:15px;margin:0 0 2px 0;}
+  .ph p{font-size:9px;margin:0;opacity:.9;}
+  .pc{background:#1a5c2a;color:white;padding:6px 16px;display:flex;justify-content:space-between;font-size:10px;margin-bottom:8px;}
+  .ps{padding:0 16px 8px;}
+  .ps h2{font-size:11px;color:#003478;border-bottom:1.5px solid #003478;padding-bottom:2px;margin:8px 0 5px;}
+  .pt{width:100%;border-collapse:collapse;font-size:9.5px;}
+  .pt td{padding:3px 5px;border:1px solid #d8e1ee;}
+  .pt td:first-child{color:#5f6f86;width:85px;background:#f8fbff;}
+  .terms-list{font-size:9px;padding-left:13px;margin:0;}
+  .terms-list li{margin-bottom:2px;line-height:1.35;}
+  .agree-box{margin-top:5px;padding:4px 9px;background:#e8f5ec;border:1px solid #a8d5b0;border-radius:3px;font-size:9px;color:#1a5c2a;font-weight:bold;page-break-inside:avoid;}
+  .sign-area{margin-top:8px;border:1px solid #d8e1ee;border-radius:5px;padding:8px 12px;position:relative;min-height:100px;page-break-inside:avoid;}
+  .sign-area-title{font-size:9.5px;color:#5f6f86;margin-bottom:5px;font-weight:bold;}
+  .sign-row{display:flex;gap:20px;}
   .sign-col{flex:1;}
-  .sign-col-label{font-size:11px;color:#5f6f86;margin-bottom:6px;}
-  .sign-col img{max-width:100%;max-height:80px;border:1px solid #d8e1ee;border-radius:4px;display:block;}
-  .sign-col-line{border-top:1px solid #999;margin-top:70px;font-size:11px;color:#5f6f86;padding-top:4px;}
-  .sign-date-corner{position:absolute;right:14px;bottom:10px;font-size:10px;color:#b5b5b5;}
-  .footer-note{text-align:center;font-size:10px;color:#999;border-top:1px solid #eee;padding:10px 24px;margin-top:16px;}
+  .sign-col-label{font-size:9px;color:#5f6f86;margin-bottom:3px;}
+  .sign-col img{max-width:100%;max-height:55px;border:1px solid #d8e1ee;border-radius:3px;display:block;}
+  .sign-col-line{border-top:1px solid #999;margin-top:45px;font-size:9px;color:#5f6f86;padding-top:3px;}
+  .sign-date-corner{position:absolute;right:10px;bottom:7px;font-size:9px;color:#c0c0c0;}
+  .footer-note{text-align:center;font-size:8.5px;color:#999;border-top:1px solid #eee;padding:5px 14px;margin-top:8px;}
 </style>
+
 <div class="ph"><h1>FORD 安心保固延長保固申請確認單</h1><p>Ford Extended Warranty Electronic Application Confirmation</p></div>
 <div class="pc"><span id="p_caseNum"></span><span id="p_date"></span></div>
+
 <div class="ps">
   <h2>一、車主資料</h2>
   <table class="pt">
@@ -143,6 +151,7 @@
     <div class="sign-date-corner" id="p_signDate"></div>
   </div>
 </div>
+
 <div class="footer-note">本文件由 FORD 安心保固電子申請系統自動產生，僅供申請紀錄使用，正式保固條款以合約為準。Dealer Use Only.</div>
 </div>
 
@@ -164,7 +173,6 @@
     </div>
 
     <div class="card">
-
       <div class="step-panel active" id="step1">
         <h2>第 1 步：車主資料</h2>
         <div class="row">
@@ -303,7 +311,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </main>
@@ -557,10 +564,25 @@ function downloadPDF(){
 }
 
 function doPrint(){
-  document.getElementById('printArea').style.display='block';
+  var pa=document.getElementById('printArea');
+  pa.style.display='block';
+  var w=window.innerWidth||screen.width;
+
+  if(w<768){
+    pa.style.transform='scale(0.70)';
+    pa.style.transformOrigin='top left';
+    pa.style.width='143%';
+  }else{
+    pa.style.transform='';
+    pa.style.width='100%';
+  }
+
   window.print();
+
   setTimeout(function(){
-    document.getElementById('printArea').style.display='none';
+    pa.style.display='none';
+    pa.style.transform='';
+    pa.style.width='';
   },1500);
 }
 
