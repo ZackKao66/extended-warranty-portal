@@ -46,13 +46,16 @@
     .btn-back{background:white;color:var(--muted);border:1px solid var(--border);}
     .btn-next{background:var(--ford-blue);color:white;}
     .btn-submit{background:#1a5c2a;color:white;}
-    .btn-pdf{background:#003478;color:white;}
+    .btn-pdf{background:#003478;color:white;margin-top:10px;}
     .success-box{text-align:center;padding:48px 28px;}
     .success-icon{font-size:56px;margin-bottom:16px;}
     .success-box h2{color:#1a5c2a;}
     .case-num{margin:16px auto;display:inline-block;padding:12px 24px;background:#e8f5ec;border-radius:10px;font-weight:bold;font-size:18px;color:#1a5c2a;}
     .pdf-section{margin-top:24px;padding:20px;background:#f0f6ff;border:1px solid #c5daf5;border-radius:12px;}
-    .pdf-section p{font-size:14px;color:var(--muted);margin-bottom:14px;}
+    .pdf-section p{font-size:14px;color:var(--muted);margin-bottom:10px;}
+    .sheet-status{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:bold;}
+    .sheet-ok{background:#e8f5ec;color:#1a5c2a;}
+    .sheet-err{background:#fff0f0;color:#c00;}
     .loading{text-align:center;padding:40px;color:var(--muted);}
     .step-panel{display:none;}
     .step-panel.active{display:block;}
@@ -86,7 +89,7 @@
   .sign-area{margin-top:16px;border:1px solid #d8e1ee;border-radius:8px;padding:14px 16px;}
   .sign-area-title{font-size:12px;color:#5f6f86;margin-bottom:10px;font-weight:bold;}
   .sign-row{display:flex;gap:32px;flex-wrap:wrap;}
-  .sign-col{flex:1;min-width:200px;}
+  .sign-col{flex:1;min-width:180px;}
   .sign-col-label{font-size:11px;color:#5f6f86;margin-bottom:6px;}
   .sign-col img{max-width:100%;max-height:80px;border:1px solid #d8e1ee;border-radius:4px;display:block;}
   .sign-col-line{border-top:1px solid #999;margin-top:70px;font-size:11px;color:#5f6f86;padding-top:4px;}
@@ -124,12 +127,12 @@
     <div class="sign-row">
       <div class="sign-col">
         <div class="sign-col-label">顧客簽名 Customer Signature</div>
-        <img id="p_custSign" src="" alt="顧客簽名"/>
+        <img id="p_custSign" src="" alt="顧客簽名" style="display:none;"/>
         <div id="p_custSignEmpty" class="sign-col-line">顧客簽名</div>
       </div>
       <div class="sign-col">
         <div class="sign-col-label">銷售人員簽名 Sales Signature</div>
-        <img id="p_salesSign" src="" alt="銷售人員簽名"/>
+        <img id="p_salesSign" src="" alt="銷售人員簽名" style="display:none;"/>
         <div id="p_salesSignEmpty" class="sign-col-line">銷售人員簽名</div>
       </div>
       <div class="sign-col">
@@ -206,7 +209,7 @@
         </div>
       </div>
 
-      <!-- Step 3：注意事項 + 雙簽名 -->
+      <!-- Step 3 -->
       <div class="step-panel" id="step3">
         <h2>第 3 步：顧客注意事項與簽名</h2>
         <div class="notice-box">
@@ -225,23 +228,18 @@
           <input type="checkbox" id="agreeCheck">
           <span>本人已詳閱以上顧客注意事項，並同意提供申請所需相關資料，授權 FORD 進行保固申請審核。</span>
         </label>
-
-        <!-- 顧客簽名 -->
         <div class="sign-section">
           <h4>✍️ 顧客簽名 *</h4>
           <canvas id="custCanvas" class="sign-pad" width="800" height="130"></canvas>
           <div class="sign-tools"><button class="btn-clear" onclick="clearSign('cust')">清除重簽</button></div>
           <p class="sign-hint">請顧客使用滑鼠或手指在上方區域簽名</p>
         </div>
-
-        <!-- 銷售人員簽名 -->
         <div class="sign-section" style="margin-top:16px;">
           <h4>✍️ 銷售人員簽名 *</h4>
           <canvas id="salesCanvas" class="sign-pad" width="800" height="130"></canvas>
           <div class="sign-tools"><button class="btn-clear" onclick="clearSign('sales')">清除重簽</button></div>
           <p class="sign-hint">請銷售人員使用滑鼠或手指在上方區域簽名</p>
         </div>
-
         <div id="err3" class="error-msg">請勾選同意，並完成顧客與銷售人員簽名後再繼續</div>
         <div class="btn-row">
           <button class="btn btn-back" onclick="goStep(2)">← 上一步</button>
@@ -260,7 +258,7 @@
       </div>
 
       <div class="step-panel" id="stepLoading">
-        <div class="loading"><p style="font-size:20px;">⏳ 申請送出中，請稍候...</p></div>
+        <div class="loading"><p style="font-size:20px;">⏳ 資料送出中，請稍候...</p><p style="margin-top:12px;font-size:14px;color:#5f6f86;">正在寫入 Google Sheet...</p></div>
       </div>
 
       <div class="step-panel" id="stepSuccess">
@@ -269,6 +267,7 @@
           <h2>申請已成功送出！</h2>
           <p style="margin-top:10px;color:#5f6f86;">您的延長保固申請已記錄完成，請保留以下案件編號。</p>
           <div class="case-num" id="caseNum"></div>
+          <div id="sheetStatus"></div>
           <p style="margin-top:16px;font-size:14px;color:#5f6f86;">後續相關事項將由經銷商人員與您確認，謝謝。</p>
           <div class="pdf-section">
             <p>📄 點下方按鈕可下載本次申請的中文 PDF 確認單（含顧客及銷售人員簽名）</p>
@@ -282,7 +281,12 @@
 </main>
 
 <script>
-// ===== 流水號（瀏覽器本地遞增，從 00001 開始）=====
+// ======================================
+// ▼▼▼ 請將下方 URL 換成您的 Apps Script 網路應用程式 URL ▼▼▼
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzo0wPnAruUEYKkfXLRNlSJURUKjT2svqOcNClKd1Ls5oRHCTB3I8Trdycu71DFh4Owhg/exec';
+// ▲▲▲ 只需修改這一行 ▲▲▲
+// ======================================
+
 function getNextSeq(){
   var key='ford_ew_seq';
   var n=parseInt(localStorage.getItem(key)||'0',10)+1;
@@ -290,11 +294,9 @@ function getNextSeq(){
   return String(n).padStart(5,'0');
 }
 
-var APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbyXx9JR2VrCkJLfJicGruLmnvehXEXrnrPd23n9_df8TQulkLIRAkNg2hHy6yEA7gMcHQ/exec';
 var currentCaseNum='',formData={},custSignURL='',salesSignURL='';
-
-// ===== 簽名畫板 =====
 var pads={};
+
 function initPad(id,canvasId){
   var c=document.getElementById(canvasId);
   var ctx=c.getContext('2d');
@@ -315,17 +317,9 @@ function initPad(id,canvasId){
   c.addEventListener('touchend',function(){drawing=false;});
   pads[id]={canvas:c,ctx:ctx,signed:false};
 }
-function clearSign(id){
-  var p=pads[id];
-  p.ctx.clearRect(0,0,p.canvas.width,p.canvas.height);
-  p.signed=false;
-}
-window.addEventListener('load',function(){
-  initPad('cust','custCanvas');
-  initPad('sales','salesCanvas');
-});
+function clearSign(id){pads[id].ctx.clearRect(0,0,pads[id].canvas.width,pads[id].canvas.height);pads[id].signed=false;}
+window.addEventListener('load',function(){initPad('cust','custCanvas');initPad('sales','salesCanvas');});
 
-// ===== 車型保固選項 =====
 var WO={
   'Focus':[{y:'1年',p:'NT$ 12,000'},{y:'2年',p:'NT$ 21,000'},{y:'3年',p:'NT$ 29,000'}],
   'Kuga':[{y:'1年',p:'NT$ 14,000'},{y:'2年',p:'NT$ 24,000'},{y:'3年',p:'NT$ 33,000'}],
@@ -341,8 +335,7 @@ function updateWarranty(){
   if(WO[m]){WO[m].forEach(function(o){sel.innerHTML+='<option value="'+o.y+'">'+o.y+'（參考價 '+o.p+'）</option>';});hint.style.display='block';hint.textContent='※ 以上為參考價格，實際金額以正式報價為準。';}
   else{hint.style.display='none';}
 }
-
-// ===== 步驟驗證 =====
+function v(id){return document.getElementById(id).value.trim();}
 function validateStep1(){
   if(!v('f_name')||!v('f_phone')||!v('f_dealerCode')||!v('f_salesName')){document.getElementById('err1').style.display='block';return;}
   document.getElementById('err1').style.display='none';goStep(2);
@@ -352,16 +345,12 @@ function validateStep2(){
   document.getElementById('err2').style.display='none';goStep(3);
 }
 function validateStep3(){
-  var agreed=document.getElementById('agreeCheck').checked;
-  if(!agreed||!pads['cust'].signed||!pads['sales'].signed){document.getElementById('err3').style.display='block';return;}
+  if(!document.getElementById('agreeCheck').checked||!pads['cust'].signed||!pads['sales'].signed){document.getElementById('err3').style.display='block';return;}
   document.getElementById('err3').style.display='none';
-  // 儲存簽名 dataURL
   custSignURL=pads['cust'].canvas.toDataURL('image/png');
   salesSignURL=pads['sales'].canvas.toDataURL('image/png');
   goStep(4);
 }
-function v(id){return document.getElementById(id).value.trim();}
-
 function goStep(n){
   ['1','2','3','4','Loading','Success'].forEach(function(s){var el=document.getElementById('step'+s);if(el)el.classList.remove('active');});
   ['ps1','ps2','ps3','ps4'].forEach(function(id,i){var el=document.getElementById(id);el.classList.remove('active','done');if(i+1<n)el.classList.add('done');if(i+1===n)el.classList.add('active');});
@@ -373,33 +362,55 @@ function buildSummary(){
   var rows=[['車主姓名','f_name'],['聯絡電話','f_phone'],['Email','f_email'],['車牌號碼','f_plate'],['VIN','f_vin'],['車型','f_model'],['出廠年份','f_year'],['里程數','f_mileage'],['保固年限','f_warranty'],['經銷商代號','f_dealerCode'],['業務姓名','f_salesName']];
   var html='<table style="width:100%;border-collapse:collapse;">';
   rows.forEach(function(r){var val=document.getElementById(r[1]).value||'（未填寫）';html+='<tr><td style="padding:6px 12px 6px 0;color:#5f6f86;width:140px;">'+r[0]+'</td><td style="padding:6px 0;font-weight:bold;">'+val+'</td></tr>';});
-  html+='</table>';
-  document.getElementById('summary').innerHTML=html;
+  html+='</table>';document.getElementById('summary').innerHTML=html;
 }
 function collectFormData(){
-  formData={name:v('f_name'),phone:v('f_phone'),email:document.getElementById('f_email').value,plate:v('f_plate'),vin:v('f_vin'),model:document.getElementById('f_model').value,year:v('f_year'),mileage:v('f_mileage'),warranty:document.getElementById('f_warranty').value,dealerCode:v('f_dealerCode'),salesName:v('f_salesName')};
+  var now=new Date();
+  var ds=now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate();
+  formData={
+    caseNum:currentCaseNum,
+    applyDate:ds,
+    name:v('f_name'),phone:v('f_phone'),email:document.getElementById('f_email').value,
+    plate:v('f_plate'),vin:v('f_vin'),model:document.getElementById('f_model').value,
+    year:v('f_year'),mileage:v('f_mileage'),warranty:document.getElementById('f_warranty').value,
+    dealerCode:v('f_dealerCode'),salesName:v('f_salesName')
+  };
 }
-function showSuccess(){
+function showSuccess(sheetOK){
   document.getElementById('stepLoading').classList.remove('active');
   document.getElementById('stepSuccess').classList.add('active');
   document.getElementById('caseNum').textContent='案件編號：'+currentCaseNum;
   document.getElementById('progress').style.display='none';
+  var statusEl=document.getElementById('sheetStatus');
+  if(sheetOK){
+    statusEl.innerHTML='<div class="sheet-status sheet-ok">✅ 資料已成功寫入 Google Sheet</div>';
+  }else{
+    statusEl.innerHTML='<div class="sheet-status sheet-err">⚠️ Google Sheet 寫入失敗，請確認 Apps Script URL 設定是否正確</div>';
+  }
 }
 function submitForm(){
   collectFormData();
   currentCaseNum='EW-'+new Date().getFullYear()+'-'+getNextSeq();
+  formData.caseNum=currentCaseNum;
   document.getElementById('step4').classList.remove('active');
   document.getElementById('stepLoading').classList.add('active');
-  var form=new FormData();form.append('data',JSON.stringify(formData));
-  fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',body:form}).then(showSuccess).catch(showSuccess);
+
+  // 判斷是否已設定 URL
+  if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL===''){
+    setTimeout(function(){showSuccess(false);},800);
+    return;
+  }
+
+  var form=new FormData();
+  form.append('data',JSON.stringify(formData));
+  fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',body:form})
+    .then(function(){showSuccess(true);})
+    .catch(function(){showSuccess(false);});
 }
 
-// ===== 下載 PDF（列印）=====
 function downloadPDF(){
   var now=new Date();
   var ds=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日';
-
-  // 填入資料
   document.getElementById('p_caseNum').textContent='案件編號：'+currentCaseNum;
   document.getElementById('p_date').textContent='申請日期：'+ds;
   document.getElementById('p_name').textContent=formData.name;
@@ -415,31 +426,17 @@ function downloadPDF(){
   document.getElementById('p_warranty').textContent=formData.warranty;
   document.getElementById('p_signDate').textContent=ds;
 
-  // 顧客簽名
-  var ci=document.getElementById('p_custSign');
-  var ce=document.getElementById('p_custSignEmpty');
-  if(custSignURL){ci.src=custSignURL;ci.style.display='block';ce.style.display='none';}
+  var ci=document.getElementById('p_custSign'),ce=document.getElementById('p_custSignEmpty');
+  var si=document.getElementById('p_salesSign'),se=document.getElementById('p_salesSignEmpty');
+
+  var pending=0;
+  function tryPrint(){pending--;if(pending<=0)doPrint();}
+
+  if(custSignURL){ci.src=custSignURL;ci.style.display='block';ce.style.display='none';pending++;if(ci.complete)tryPrint();else ci.onload=tryPrint;}
   else{ci.style.display='none';ce.style.display='block';}
-
-  // 銷售人員簽名
-  var si=document.getElementById('p_salesSign');
-  var se=document.getElementById('p_salesSignEmpty');
-  if(salesSignURL){si.src=salesSignURL;si.style.display='block';se.style.display='none';}
+  if(salesSignURL){si.src=salesSignURL;si.style.display='block';se.style.display='none';pending++;if(si.complete)tryPrint();else si.onload=tryPrint;}
   else{si.style.display='none';se.style.display='block';}
-
-  // 等圖片載入後再列印（修正第一次無簽名問題）
-  var custImg=document.getElementById('p_custSign');
-  var salesImg=document.getElementById('p_salesSign');
-  var loaded=0;
-  function tryPrint(){loaded++;if(loaded>=2)doPrint();}
-  if(custSignURL){
-    custImg.onload=tryPrint;
-    if(custImg.complete)tryPrint();
-  }else{tryPrint();}
-  if(salesSignURL){
-    salesImg.onload=tryPrint;
-    if(salesImg.complete)tryPrint();
-  }else{tryPrint();}
+  if(pending===0)doPrint();
 }
 function doPrint(){
   document.getElementById('printArea').style.display='block';
