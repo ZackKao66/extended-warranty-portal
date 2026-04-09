@@ -46,6 +46,7 @@
     .btn-back{background:white;color:var(--muted);border:1px solid var(--border);}
     .btn-next{background:var(--ford-blue);color:white;}
     .btn-submit{background:#1a5c2a;color:white;}
+    .btn-submit:disabled{background:#999;cursor:not-allowed;}
     .btn-pdf{background:#003478;color:white;margin-top:10px;}
     .btn-new{background:#e8f0fe;color:#003478;border:1px solid #c5daf5;margin-top:12px;width:100%;}
     .success-box{text-align:center;padding:48px 28px;}
@@ -63,6 +64,7 @@
     .error-msg{margin-top:12px;padding:12px 16px;background:#fff0f0;border:1px solid #ffcccc;border-radius:10px;color:#c00;font-size:14px;display:none;}
     .price-hint{margin-bottom:14px;padding:14px 16px;background:#eaf3ff;border-radius:10px;font-size:14px;color:#003478;border:1px solid #c5daf5;display:none;}
     .price-hint strong{font-size:16px;}
+    .info-tag{display:inline-block;margin-top:6px;padding:4px 10px;background:#fff8e1;border:1px solid #ffe58f;border-radius:6px;font-size:12px;color:#7a5c00;}
     #printArea{display:none;}
     @media print{
       body>*{display:none!important;}
@@ -254,6 +256,7 @@
               <option value="13-30">13 ~ 30 個月</option>
               <option value="31-36">31 ~ 36 個月</option>
             </select>
+            <div id="nonPersonalHint" class="info-tag" style="display:none;">⚠️ 非個人戶僅提供 0~3 個月內車齡方案</div>
           </div>
           <div class="field">
             <label>延長保固方案 *</label>
@@ -316,7 +319,7 @@
         <div id="summary" style="background:#f8fbff;border:1px solid #d8e1ee;border-radius:12px;padding:20px;margin-bottom:20px;font-size:15px;line-height:2;"></div>
         <div class="btn-row">
           <button class="btn btn-back" onclick="goStep(3)">← 上一步</button>
-          <button class="btn btn-submit" onclick="submitForm()">✅ 確認送出申請</button>
+          <button class="btn btn-submit" id="btnSubmit" onclick="submitForm()">✅ 確認送出申請</button>
         </div>
       </div>
 
@@ -324,7 +327,7 @@
       <div class="step-panel" id="stepLoading">
         <div class="loading">
           <p style="font-size:20px;">⏳ 資料送出中，請稍候...</p>
-          <p style="margin-top:12px;font-size:14px;color:#5f6f86;">正在寫入 Google Sheet...</p>
+          <p style="margin-top:12px;font-size:14px;color:#5f6f86;">正在寫入 Google Sheet 並產生案件編號...</p>
         </div>
       </div>
 
@@ -459,16 +462,8 @@ var modelNames = {
 };
 
 var noNonPersonal = ['S650_2.3','S650_5.0','CX727'];
-
 var currentCaseNum='', formData={}, custSignURL='', salesSignURL='';
 var pads={};
-
-function getNextSeq(){
-  var key='ford_ew_seq';
-  var n=parseInt(localStorage.getItem(key)||'0',10)+1;
-  try{localStorage.setItem(key,n);}catch(e){}
-  return String(n).padStart(5,'0');
-}
 
 function initPad(id,canvasId){
   var c=document.getElementById(canvasId);
@@ -506,10 +501,12 @@ function onCustTypeChange(){
   var custType=document.getElementById('f_custType').value;
   var model=document.getElementById('f_model').value;
   var carAgeSel=document.getElementById('f_carAge');
+  var hint=document.getElementById('nonPersonalHint');
 
   if(custType==='非個人戶' && noNonPersonal.indexOf(model)!==-1){
     alert(modelNames[model]+' 無非個人戶方案，已自動切換為個人戶。');
     document.getElementById('f_custType').value='個人戶';
+    hint.style.display='none';
     return;
   }
 
@@ -517,11 +514,13 @@ function onCustTypeChange(){
   if(custType==='非個人戶'){
     carAgeSel.innerHTML+='<option value="0-3">0 ~ 3 個月</option>';
     carAgeSel.value='0-3';
+    hint.style.display='block';
   } else {
     carAgeSel.innerHTML+='<option value="0-3">0 ~ 3 個月</option>';
     carAgeSel.innerHTML+='<option value="4-12">4 ~ 12 個月</option>';
     carAgeSel.innerHTML+='<option value="13-30">13 ~ 30 個月</option>';
     carAgeSel.innerHTML+='<option value="31-36">31 ~ 36 個月</option>';
+    hint.style.display='none';
   }
   updateWarrantyOptions();
 }
@@ -580,15 +579,10 @@ function validateStep1(){
 }
 
 function validateStep2(){
-  var model=document.getElementById('f_model').value;
-  var carAge=document.getElementById('f_carAge').value;
-  var warranty=document.getElementById('f_warranty').value;
-  if(!model||!carAge||!warranty){
+  if(!document.getElementById('f_model').value||!document.getElementById('f_carAge').value||!document.getElementById('f_warranty').value){
     document.getElementById('err2').style.display='block';
     return;
   }
-  if(!v('f_plate')) document.getElementById('f_plate').value='新車等待配車';
-  if(!v('f_vin')) document.getElementById('f_vin').value='新車等待配車';
   document.getElementById('err2').style.display='none';
   goStep(3);
 }
@@ -661,7 +655,6 @@ function collectFormData(){
   var modelCode=document.getElementById('f_model').value;
   var carAgeMap={'0-3':'0~3個月','4-12':'4~12個月','13-30':'13~30個月','31-36':'31~36個月'};
   formData={
-    caseNum:currentCaseNum,
     applyDate:ds,
     name:v('f_name'),
     phone:v('f_phone'),
@@ -680,10 +673,10 @@ function collectFormData(){
   };
 }
 
-function showSuccess(sheetOK){
+function showSuccess(sheetOK, caseNum){
   document.getElementById('stepLoading').classList.remove('active');
   document.getElementById('stepSuccess').classList.add('active');
-  document.getElementById('caseNum').textContent='案件編號：'+currentCaseNum;
+  document.getElementById('caseNum').textContent='案件編號：'+(caseNum||'產生失敗，請聯繫管理員');
   document.getElementById('progress').style.display='none';
   document.getElementById('sheetStatus').innerHTML=sheetOK
     ?'<div class="sheet-status sheet-ok">✅ 資料已成功寫入 Google Sheet</div>'
@@ -691,17 +684,37 @@ function showSuccess(sheetOK){
 }
 
 function submitForm(){
-  currentCaseNum='EW-'+new Date().getFullYear()+'-'+getNextSeq();
+  // ✅ 防止重複點擊
+  var btn=document.getElementById('btnSubmit');
+  btn.disabled=true;
+  btn.textContent='送出中...';
+
   collectFormData();
-  formData.caseNum=currentCaseNum;
+
   document.getElementById('step4').classList.remove('active');
   document.getElementById('stepLoading').classList.add('active');
-  if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL===''){setTimeout(function(){showSuccess(false);},800);return;}
+
   var form=new FormData();
   form.append('data',JSON.stringify(formData));
-  fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',body:form})
-    .then(function(){showSuccess(true);})
-    .catch(function(){showSuccess(false);});
+
+  fetch(APPS_SCRIPT_URL,{method:'POST',body:form})
+    .then(function(res){
+      // no-cors 模式無法讀取 response，改用一般模式嘗試取回案件編號
+      return res.text();
+    })
+    .then(function(text){
+      try{
+        var json=JSON.parse(text);
+        currentCaseNum=json.caseNum||'';
+        showSuccess(json.status==='success', currentCaseNum);
+      }catch(err){
+        // 如果無法解析（no-cors），仍顯示成功但無編號
+        showSuccess(true,'');
+      }
+    })
+    .catch(function(){
+      showSuccess(false,'');
+    });
 }
 
 function downloadPDF(){
@@ -753,6 +766,9 @@ function resetForm(){
   document.getElementById('f_warranty').innerHTML='<option value="">請先選擇車型與車齡</option>';
   document.getElementById('agreeCheck').checked=false;
   document.getElementById('priceHint').style.display='none';
+  document.getElementById('nonPersonalHint').style.display='none';
+  var btn=document.getElementById('btnSubmit');
+  btn.disabled=false;btn.textContent='✅ 確認送出申請';
   clearSign('cust');clearSign('sales');
   custSignURL='';salesSignURL='';currentCaseNum='';formData={};
   document.getElementById('progress').style.display='flex';
