@@ -71,7 +71,6 @@
     .summary-table td{padding:6px 12px 6px 0;font-size:15px;}
     .summary-table td:first-child{color:#5f6f86;width:140px;}
     .summary-table td:last-child{font-weight:bold;}
-    .summary-divider{border:none;border-top:1px solid var(--border);margin:14px 0;}
     #printArea{display:none;}
     @media print{
       body>*{display:none!important;}
@@ -99,7 +98,7 @@
   .pt td{padding:3px 5px;border:1px solid #d8e1ee;}
   .pt td:first-child{color:#5f6f86;width:85px;background:#f8fbff;}
   .terms-list{font-size:9px;padding-left:13px;margin:0;}
-  .terms-list li{margin-bottom:2px;line-height:1.35;}
+  .terms-list li{margin-bottom:3px;line-height:1.45;}
   .agree-box{margin-top:5px;padding:4px 9px;background:#e8f5ec;border:1px solid #a8d5b0;border-radius:3px;font-size:9px;color:#1a5c2a;font-weight:bold;}
   .sign-area{margin-top:8px;border:1px solid #d8e1ee;border-radius:5px;padding:8px 12px;position:relative;min-height:100px;page-break-inside:avoid;}
   .sign-area-title{font-size:9.5px;color:#5f6f86;margin-bottom:5px;font-weight:bold;}
@@ -135,15 +134,14 @@
   </table>
   <h2>三、顧客注意事項</h2>
   <ul class="terms-list">
-    <li>延長保固方案之有效期限，自原廠保固到期後生效，不得重疊計算。</li>
-    <li>保固範圍依所選方案而定，不包含消耗性零件（如輪胎、煞車片、電池耗損）。</li>
-    <li>保固服務須於原廠授權之 FORD 經銷商進行，非授權廠商維修將喪失保固資格。</li>
-    <li>申請時車輛里程數與狀態須符合各方案規定，如有超過限制將不予核准。</li>
-    <li>車輛如有改裝、事故未修復或違規使用紀錄，保固申請可能不予通過。</li>
-    <li>申請核准後，保固條款以正式合約為準，電子申請紀錄僅為初步申請依據。</li>
+    <li>保固範圍依所選方案而定，不包含消耗性零件（如輪胎、煞車片、電池耗損等），詳情請洽安心保固合約書。</li>
+    <li>自購買日起，車主須依車主手冊之規範，每半年或每萬公里回福特汽車經銷商並使用服務廠所銷售之原廠機油及原廠零件進行保養，如果車主沒有遵守以上保養注意事項，本公司有權拒絕索賠或者終止本車輛服務合約。</li>
+    <li>保固服務期間須於 FORD 原廠授權經銷商進行車輛維護保養，於非授權服務廠維修將喪失保固資格。</li>
     <li>如有疑問，請洽詢原廠客服專線或授權經銷商。</li>
+    <li>本人已詳讀且充分瞭解福特「安心保固」車輛服務合約之內容，及保固範圍，並願遵守其條款之約定。</li>
+    <li>本人保證提供本「安心保固」車輛服務合約申請書所填寫之資料正確無誤。</li>
   </ul>
-  <div class="agree-box">☑ 本人已詳閱以上顧客注意事項，並同意提供申請所需相關資料，授權 FORD 進行保固申請審核。</div>
+  <div class="agree-box">☑ 本人已詳讀且充分瞭解以上注意事項，並保證所填寫資料正確無誤，授權 FORD 進行保固申請審核。</div>
   <h2>四、簽名欄</h2>
   <div class="sign-area">
     <div class="sign-area-title">以下簽名欄由當事人親自簽署</div>
@@ -184,7 +182,7 @@
 
     <div class="card">
 
-      <!-- Step 1：車主資料（顧客填寫） -->
+      <!-- Step 1 -->
       <div class="step-panel active" id="step1">
         <h2>第 1 步：車主資料</h2>
         <div class="row">
@@ -204,7 +202,7 @@
         <div class="btn-row"><span></span><button class="btn btn-next" onclick="validateStep1()">下一步 →</button></div>
       </div>
 
-      <!-- Step 2：車輛與保固資料 -->
+      <!-- Step 2 -->
       <div class="step-panel" id="step2">
         <h2>第 2 步：車輛與保固資料</h2>
         <div class="row">
@@ -269,24 +267,23 @@
         </div>
       </div>
 
-      <!-- Step 3：注意事項與簽名 -->
+      <!-- Step 3 -->
       <div class="step-panel" id="step3">
         <h2>第 3 步：顧客注意事項與簽名</h2>
         <div class="notice-box">
           <h3>📋 FORD 安心保固 注意事項</h3>
           <ul>
-            <li>延長保固方案之有效期限，自原廠保固到期後生效，不得重疊計算。</li>
-            <li>保固範圍依所選方案而定，不包含消耗性零件（如輪胎、煞車片、電池耗損）。</li>
-            <li>保固服務須於原廠授權之 FORD 經銷商進行，非授權廠商維修將喪失保固資格。</li>
-            <li>申請時車輛里程數與狀態須符合各方案規定，如有超過限制將不予核准。</li>
-            <li>車輛如有改裝、事故未修復或違規使用紀錄，保固申請可能不予通過。</li>
-            <li>申請核准後，保固條款以正式合約為準，電子申請紀錄僅為初步申請依據。</li>
+            <li>保固範圍依所選方案而定，不包含消耗性零件（如輪胎、煞車片、電池耗損等），詳情請洽安心保固合約書。</li>
+            <li>自購買日起，車主須依車主手冊之規範，每半年或每萬公里回福特汽車經銷商並使用服務廠所銷售之原廠機油及原廠零件進行保養，如果車主沒有遵守以上保養注意事項，本公司有權拒絕索賠或者終止本車輛服務合約。</li>
+            <li>保固服務期間須於 FORD 原廠授權經銷商進行車輛維護保養，於非授權服務廠維修將喪失保固資格。</li>
             <li>如有疑問，請洽詢原廠客服專線或授權經銷商。</li>
+            <li>本人已詳讀且充分瞭解福特「安心保固」車輛服務合約之內容，及保固範圍，並願遵守其條款之約定。</li>
+            <li>本人保證提供本「安心保固」車輛服務合約申請書所填寫之資料正確無誤。</li>
           </ul>
         </div>
         <label class="checkbox-row">
           <input type="checkbox" id="agreeCheck">
-          <span>本人已詳閱以上顧客注意事項，並同意提供申請所需相關資料，授權 FORD 進行保固申請審核。</span>
+          <span>本人已詳讀且充分瞭解以上注意事項，並保證所填寫資料正確無誤，授權 FORD 進行保固申請審核。</span>
         </label>
         <div class="sign-section">
           <h4>✍️ 顧客簽名 *</h4>
@@ -307,14 +304,10 @@
         </div>
       </div>
 
-      <!-- Step 4：確認送出（含銷售人員填寫區） -->
+      <!-- Step 4 -->
       <div class="step-panel" id="step4">
         <h2>第 4 步：確認申請內容</h2>
-
-        <!-- 顧客資料摘要 -->
         <div id="summary" style="background:#f8fbff;border:1px solid #d8e1ee;border-radius:12px;padding:20px;margin-bottom:20px;font-size:15px;"></div>
-
-        <!-- 銷售人員填寫區 -->
         <div class="dealer-section">
           <h3>🏪 銷售人員填寫區（請銷售人員確認後填寫）</h3>
           <div class="row">
@@ -341,7 +334,6 @@
             <div class="field"><label>銷售人員姓名 *</label><input type="text" id="f_salesName" placeholder="請輸入銷售人員姓名"></div>
           </div>
         </div>
-
         <div id="err4" class="error-msg">請填寫經銷商名稱與銷售人員姓名後再送出</div>
         <div class="btn-row">
           <button class="btn btn-back" onclick="goStep(3)">← 上一步</button>
@@ -708,18 +700,13 @@ function submitForm(){
     document.getElementById('err4').style.display='block';return;
   }
   document.getElementById('err4').style.display='none';
-
   var btn=document.getElementById('btnSubmit');
   btn.disabled=true;btn.textContent='送出中...';
-
   collectFormData();
-
   document.getElementById('step4').classList.remove('active');
   document.getElementById('stepLoading').classList.add('active');
-
   var form=new FormData();
   form.append('data',JSON.stringify(formData));
-
   fetch(APPS_SCRIPT_URL,{method:'POST',body:form})
     .then(function(res){return res.text();})
     .then(function(text){
