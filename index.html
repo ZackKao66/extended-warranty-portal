@@ -29,6 +29,8 @@
     .field label{display:block;font-size:14px;color:var(--muted);margin-bottom:6px;}
     .field input,.field select{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:white;outline:none;transition:border-color .2s;}
     .field input:focus,.field select:focus{border-color:var(--ford-blue);}
+    .dealer-section{margin-top:20px;padding:20px;background:#fffbe6;border:1px solid #ffe58f;border-radius:12px;}
+    .dealer-section h3{font-size:15px;color:#7a5c00;margin-bottom:14px;}
     .notice-box{background:#f0f6ff;border:1px solid #c5daf5;border-radius:12px;padding:20px;margin-bottom:16px;}
     .notice-box h3{color:var(--ford-blue);margin-bottom:12px;}
     .notice-box ul{padding-left:18px;}
@@ -65,6 +67,11 @@
     .price-hint{margin-bottom:14px;padding:14px 16px;background:#eaf3ff;border-radius:10px;font-size:14px;color:#003478;border:1px solid #c5daf5;display:none;}
     .price-hint strong{font-size:16px;}
     .info-tag{display:inline-block;margin-top:6px;padding:4px 10px;background:#fff8e1;border:1px solid #ffe58f;border-radius:6px;font-size:12px;color:#7a5c00;}
+    .summary-table{width:100%;border-collapse:collapse;}
+    .summary-table td{padding:6px 12px 6px 0;font-size:15px;}
+    .summary-table td:first-child{color:#5f6f86;width:140px;}
+    .summary-table td:last-child{font-weight:bold;}
+    .summary-divider{border:none;border-top:1px solid var(--border);margin:14px 0;}
     #printArea{display:none;}
     @media print{
       body>*{display:none!important;}
@@ -76,6 +83,7 @@
 </head>
 <body>
 
+<!-- Print Area -->
 <div id="printArea">
 <style>
   #printArea{font-family:Arial,'Microsoft JhengHei','微軟正黑體',sans-serif;color:#10233d;width:100%;}
@@ -92,7 +100,7 @@
   .pt td:first-child{color:#5f6f86;width:85px;background:#f8fbff;}
   .terms-list{font-size:9px;padding-left:13px;margin:0;}
   .terms-list li{margin-bottom:2px;line-height:1.35;}
-  .agree-box{margin-top:5px;padding:4px 9px;background:#e8f5ec;border:1px solid #a8d5b0;border-radius:3px;font-size:9px;color:#1a5c2a;font-weight:bold;page-break-inside:avoid;}
+  .agree-box{margin-top:5px;padding:4px 9px;background:#e8f5ec;border:1px solid #a8d5b0;border-radius:3px;font-size:9px;color:#1a5c2a;font-weight:bold;}
   .sign-area{margin-top:8px;border:1px solid #d8e1ee;border-radius:5px;padding:8px 12px;position:relative;min-height:100px;page-break-inside:avoid;}
   .sign-area-title{font-size:9.5px;color:#5f6f86;margin-bottom:5px;font-weight:bold;}
   .sign-row{display:flex;gap:20px;}
@@ -115,15 +123,15 @@
   <h2>一、車主資料</h2>
   <table class="pt">
     <tr><td>車主姓名</td><td id="p_name"></td><td>聯絡電話</td><td id="p_phone"></td></tr>
-    <tr><td>電子信箱</td><td id="p_email"></td><td>經銷商名稱</td><td id="p_dealerName"></td></tr>
-    <tr><td>顧客類別</td><td id="p_custType"></td><td>銷售人員姓名</td><td id="p_salesName"></td></tr>
+    <tr><td>電子信箱</td><td id="p_email"></td><td>顧客類別</td><td id="p_custType"></td></tr>
+    <tr><td>經銷商名稱</td><td id="p_dealerName"></td><td>銷售人員姓名</td><td id="p_salesName"></td></tr>
   </table>
   <h2>二、車輛與保固資料</h2>
   <table class="pt">
     <tr><td>車牌號碼</td><td id="p_plate"></td><td>VIN車身號碼</td><td id="p_vin"></td></tr>
     <tr><td>車型</td><td id="p_model"></td><td>出廠年份</td><td id="p_year"></td></tr>
     <tr><td>車齡月份</td><td id="p_carAge"></td><td>延長保固方案</td><td id="p_warranty"></td></tr>
-    <tr><td>方案費用</td><td id="p_price" colspan="3"></td></tr>
+    <tr><td>方案費用</td><td id="p_price"></td><td>付款方式</td><td id="p_payMethod"></td></tr>
   </table>
   <h2>三、顧客注意事項</h2>
   <ul class="terms-list">
@@ -176,7 +184,7 @@
 
     <div class="card">
 
-      <!-- Step 1 -->
+      <!-- Step 1：車主資料（顧客填寫） -->
       <div class="step-panel active" id="step1">
         <h2>第 1 步：車主資料</h2>
         <div class="row">
@@ -184,29 +192,6 @@
           <div class="field"><label>聯絡電話 *</label><input type="text" id="f_phone" placeholder="0912-345-678"></div>
         </div>
         <div class="field"><label>電子信箱 Email *</label><input type="email" id="f_email" placeholder="example@email.com"></div>
-        <div class="row">
-          <div class="field">
-            <label>經銷商名稱 *</label>
-            <select id="f_dealerName">
-              <option value="">請選擇經銷商</option>
-              <option value="中太汽車">中太汽車</option>
-              <option value="台北九和">台北九和</option>
-              <option value="建富汽車">建富汽車</option>
-              <option value="福祐汽車">福祐汽車</option>
-              <option value="全進汽車">全進汽車</option>
-              <option value="東港汽車">東港汽車</option>
-              <option value="新苗汽車">新苗汽車</option>
-              <option value="台中九和">台中九和</option>
-              <option value="上立汽車">上立汽車</option>
-              <option value="福彰汽車">福彰汽車</option>
-              <option value="瑞特汽車">瑞特汽車</option>
-              <option value="高雄九和">高雄九和</option>
-              <option value="上正汽車">上正汽車</option>
-              <option value="仁福汽車">仁福汽車</option>
-            </select>
-          </div>
-          <div class="field"><label>銷售人員姓名 *</label><input type="text" id="f_salesName" placeholder="請輸入銷售人員姓名"></div>
-        </div>
         <div class="field">
           <label>顧客類別 *</label>
           <select id="f_custType" onchange="onCustTypeChange()">
@@ -219,7 +204,7 @@
         <div class="btn-row"><span></span><button class="btn btn-next" onclick="validateStep1()">下一步 →</button></div>
       </div>
 
-      <!-- Step 2 -->
+      <!-- Step 2：車輛與保固資料 -->
       <div class="step-panel" id="step2">
         <h2>第 2 步：車輛與保固資料</h2>
         <div class="row">
@@ -265,6 +250,15 @@
             </select>
           </div>
         </div>
+        <div class="field">
+          <label>付款方式 *</label>
+          <select id="f_payMethod">
+            <option value="">請選擇付款方式</option>
+            <option value="現金">現金</option>
+            <option value="車貸">車貸</option>
+            <option value="信用卡">信用卡</option>
+          </select>
+        </div>
         <div class="price-hint" id="priceHint">
           方案費用：<strong id="priceValue"></strong>（參考價格，實際以正式報價為準）
         </div>
@@ -275,7 +269,7 @@
         </div>
       </div>
 
-      <!-- Step 3 -->
+      <!-- Step 3：注意事項與簽名 -->
       <div class="step-panel" id="step3">
         <h2>第 3 步：顧客注意事項與簽名</h2>
         <div class="notice-box">
@@ -313,10 +307,42 @@
         </div>
       </div>
 
-      <!-- Step 4 -->
+      <!-- Step 4：確認送出（含銷售人員填寫區） -->
       <div class="step-panel" id="step4">
         <h2>第 4 步：確認申請內容</h2>
-        <div id="summary" style="background:#f8fbff;border:1px solid #d8e1ee;border-radius:12px;padding:20px;margin-bottom:20px;font-size:15px;line-height:2;"></div>
+
+        <!-- 顧客資料摘要 -->
+        <div id="summary" style="background:#f8fbff;border:1px solid #d8e1ee;border-radius:12px;padding:20px;margin-bottom:20px;font-size:15px;"></div>
+
+        <!-- 銷售人員填寫區 -->
+        <div class="dealer-section">
+          <h3>🏪 銷售人員填寫區（請銷售人員確認後填寫）</h3>
+          <div class="row">
+            <div class="field">
+              <label>經銷商名稱 *</label>
+              <select id="f_dealerName">
+                <option value="">請選擇經銷商</option>
+                <option value="中太汽車">中太汽車</option>
+                <option value="台北九和">台北九和</option>
+                <option value="建富汽車">建富汽車</option>
+                <option value="福祐汽車">福祐汽車</option>
+                <option value="全進汽車">全進汽車</option>
+                <option value="東港汽車">東港汽車</option>
+                <option value="新苗汽車">新苗汽車</option>
+                <option value="台中九和">台中九和</option>
+                <option value="上立汽車">上立汽車</option>
+                <option value="福彰汽車">福彰汽車</option>
+                <option value="瑞特汽車">瑞特汽車</option>
+                <option value="高雄九和">高雄九和</option>
+                <option value="上正汽車">上正汽車</option>
+                <option value="仁福汽車">仁福汽車</option>
+              </select>
+            </div>
+            <div class="field"><label>銷售人員姓名 *</label><input type="text" id="f_salesName" placeholder="請輸入銷售人員姓名"></div>
+          </div>
+        </div>
+
+        <div id="err4" class="error-msg">請填寫經銷商名稱與銷售人員姓名後再送出</div>
         <div class="btn-row">
           <button class="btn btn-back" onclick="goStep(3)">← 上一步</button>
           <button class="btn btn-submit" id="btnSubmit" onclick="submitForm()">✅ 確認送出申請</button>
@@ -502,24 +528,19 @@ function onCustTypeChange(){
   var model=document.getElementById('f_model').value;
   var carAgeSel=document.getElementById('f_carAge');
   var hint=document.getElementById('nonPersonalHint');
-
-  if(custType==='非個人戶' && noNonPersonal.indexOf(model)!==-1){
+  if(custType==='非個人戶'&&noNonPersonal.indexOf(model)!==-1){
     alert(modelNames[model]+' 無非個人戶方案，已自動切換為個人戶。');
     document.getElementById('f_custType').value='個人戶';
     hint.style.display='none';
     return;
   }
-
   carAgeSel.innerHTML='<option value="">請選擇車齡</option>';
   if(custType==='非個人戶'){
     carAgeSel.innerHTML+='<option value="0-3">0 ~ 3 個月</option>';
     carAgeSel.value='0-3';
     hint.style.display='block';
   } else {
-    carAgeSel.innerHTML+='<option value="0-3">0 ~ 3 個月</option>';
-    carAgeSel.innerHTML+='<option value="4-12">4 ~ 12 個月</option>';
-    carAgeSel.innerHTML+='<option value="13-30">13 ~ 30 個月</option>';
-    carAgeSel.innerHTML+='<option value="31-36">31 ~ 36 個月</option>';
+    carAgeSel.innerHTML+='<option value="0-3">0 ~ 3 個月</option><option value="4-12">4 ~ 12 個月</option><option value="13-30">13 ~ 30 個月</option><option value="31-36">31 ~ 36 個月</option>';
     hint.style.display='none';
   }
   updateWarrantyOptions();
@@ -528,7 +549,7 @@ function onCustTypeChange(){
 function onModelChange(){
   var model=document.getElementById('f_model').value;
   var custType=document.getElementById('f_custType').value;
-  if(custType==='非個人戶' && noNonPersonal.indexOf(model)!==-1){
+  if(custType==='非個人戶'&&noNonPersonal.indexOf(model)!==-1){
     alert(modelNames[model]+' 無非個人戶方案，已自動切換為個人戶。');
     document.getElementById('f_custType').value='個人戶';
     onCustTypeChange();
@@ -546,7 +567,7 @@ function updateWarrantyOptions(){
   sel.innerHTML='<option value="">請選擇方案</option>';
   hint.style.display='none';
   document.getElementById('priceValue').textContent='';
-  if(!model||!custType||!carAge) return;
+  if(!model||!custType||!carAge)return;
   var typeData=prices[model]&&prices[model][custType];
   if(!typeData){sel.innerHTML='<option value="">此車型無此顧客類別方案</option>';return;}
   var ageData=typeData[carAge];
@@ -569,19 +590,18 @@ function showPrice(){
 
 function validateStep1(){
   var email=v('f_email');
-  var emailValid=email!==''&&email.indexOf('@')!==-1&&email.indexOf('.')!==-1;
-  if(!v('f_name')||!v('f_phone')||!emailValid||!document.getElementById('f_dealerName').value||!v('f_salesName')||!document.getElementById('f_custType').value){
-    document.getElementById('err1').style.display='block';
-    return;
+  var emailOK=email!==''&&email.indexOf('@')!==-1&&email.indexOf('.')!==-1;
+  if(!v('f_name')||!v('f_phone')||!emailOK||!document.getElementById('f_custType').value){
+    document.getElementById('err1').style.display='block';return;
   }
   document.getElementById('err1').style.display='none';
   goStep(2);
 }
 
 function validateStep2(){
-  if(!document.getElementById('f_model').value||!document.getElementById('f_carAge').value||!document.getElementById('f_warranty').value){
-    document.getElementById('err2').style.display='block';
-    return;
+  if(!document.getElementById('f_model').value||!document.getElementById('f_carAge').value||
+     !document.getElementById('f_warranty').value||!document.getElementById('f_payMethod').value){
+    document.getElementById('err2').style.display='block';return;
   }
   document.getElementById('err2').style.display='none';
   goStep(3);
@@ -589,8 +609,7 @@ function validateStep2(){
 
 function validateStep3(){
   if(!document.getElementById('agreeCheck').checked||!pads['cust'].signed||!pads['sales'].signed){
-    document.getElementById('err3').style.display='block';
-    return;
+    document.getElementById('err3').style.display='block';return;
   }
   document.getElementById('err3').style.display='none';
   custSignURL=pads['cust'].canvas.toDataURL('image/png');
@@ -618,7 +637,7 @@ function getSelectedPrice(){
   var custType=document.getElementById('f_custType').value;
   var carAge=document.getElementById('f_carAge').value;
   var plan=document.getElementById('f_warranty').value;
-  if(!model||!custType||!carAge||!plan) return '-';
+  if(!model||!custType||!carAge||!plan)return'-';
   var p=prices[model]&&prices[model][custType]&&prices[model][custType][carAge]&&prices[model][custType][carAge][plan];
   return p?'NT$ '+p.toLocaleString():'-';
 }
@@ -638,12 +657,12 @@ function buildSummary(){
     ['車齡月份',carAgeMap[document.getElementById('f_carAge').value]||''],
     ['保固方案',document.getElementById('f_warranty').value],
     ['方案費用',getSelectedPrice()],
-    ['經銷商名稱',document.getElementById('f_dealerName').value],
-    ['銷售人員姓名',v('f_salesName')]
+    ['付款方式',document.getElementById('f_payMethod').value]
   ];
-  var html='<table style="width:100%;border-collapse:collapse;">';
+  var html='<div style="font-size:13px;color:#003478;font-weight:bold;margin-bottom:12px;">📋 顧客填寫內容確認</div>';
+  html+='<table class="summary-table">';
   rows.forEach(function(r){
-    html+='<tr><td style="padding:6px 12px 6px 0;color:#5f6f86;width:140px;">'+r[0]+'</td><td style="padding:6px 0;font-weight:bold;">'+r[1]+'</td></tr>';
+    html+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>';
   });
   html+='</table>';
   document.getElementById('summary').innerHTML=html;
@@ -668,12 +687,13 @@ function collectFormData(){
     carAge:carAgeMap[document.getElementById('f_carAge').value]||document.getElementById('f_carAge').value,
     warranty:document.getElementById('f_warranty').value,
     price:getSelectedPrice(),
+    payMethod:document.getElementById('f_payMethod').value,
     dealerName:document.getElementById('f_dealerName').value,
     salesName:v('f_salesName')
   };
 }
 
-function showSuccess(sheetOK, caseNum){
+function showSuccess(sheetOK,caseNum){
   document.getElementById('stepLoading').classList.remove('active');
   document.getElementById('stepSuccess').classList.add('active');
   document.getElementById('caseNum').textContent='案件編號：'+(caseNum||'產生失敗，請聯繫管理員');
@@ -684,10 +704,13 @@ function showSuccess(sheetOK, caseNum){
 }
 
 function submitForm(){
-  // ✅ 防止重複點擊
+  if(!document.getElementById('f_dealerName').value||!v('f_salesName')){
+    document.getElementById('err4').style.display='block';return;
+  }
+  document.getElementById('err4').style.display='none';
+
   var btn=document.getElementById('btnSubmit');
-  btn.disabled=true;
-  btn.textContent='送出中...';
+  btn.disabled=true;btn.textContent='送出中...';
 
   collectFormData();
 
@@ -698,23 +721,17 @@ function submitForm(){
   form.append('data',JSON.stringify(formData));
 
   fetch(APPS_SCRIPT_URL,{method:'POST',body:form})
-    .then(function(res){
-      // no-cors 模式無法讀取 response，改用一般模式嘗試取回案件編號
-      return res.text();
-    })
+    .then(function(res){return res.text();})
     .then(function(text){
       try{
         var json=JSON.parse(text);
         currentCaseNum=json.caseNum||'';
-        showSuccess(json.status==='success', currentCaseNum);
+        showSuccess(json.status==='success',currentCaseNum);
       }catch(err){
-        // 如果無法解析（no-cors），仍顯示成功但無編號
         showSuccess(true,'');
       }
     })
-    .catch(function(){
-      showSuccess(false,'');
-    });
+    .catch(function(){showSuccess(false,'');});
 }
 
 function downloadPDF(){
@@ -735,6 +752,7 @@ function downloadPDF(){
   document.getElementById('p_carAge').textContent=formData.carAge;
   document.getElementById('p_warranty').textContent=formData.warranty;
   document.getElementById('p_price').textContent=formData.price;
+  document.getElementById('p_payMethod').textContent=formData.payMethod;
   document.getElementById('p_signDate').textContent=ds;
   var ci=document.getElementById('p_custSign'),ce=document.getElementById('p_custSignEmpty');
   var si=document.getElementById('p_salesSign'),se=document.getElementById('p_salesSignEmpty');
@@ -761,7 +779,9 @@ function resetForm(){
   ['f_name','f_phone','f_email','f_plate','f_vin','f_year','f_salesName'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.value='';
   });
-  ['f_model','f_custType','f_dealerName'].forEach(function(id){document.getElementById(id).value='';});
+  ['f_model','f_custType','f_dealerName','f_payMethod'].forEach(function(id){
+    document.getElementById(id).value='';
+  });
   document.getElementById('f_carAge').innerHTML='<option value="">請選擇車齡</option><option value="0-3">0 ~ 3 個月</option><option value="4-12">4 ~ 12 個月</option><option value="13-30">13 ~ 30 個月</option><option value="31-36">31 ~ 36 個月</option>';
   document.getElementById('f_warranty').innerHTML='<option value="">請先選擇車型與車齡</option>';
   document.getElementById('agreeCheck').checked=false;
