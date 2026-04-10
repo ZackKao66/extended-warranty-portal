@@ -71,13 +71,28 @@
     .summary-table td{padding:6px 12px 6px 0;font-size:15px;}
     .summary-table td:first-child{color:#5f6f86;width:140px;}
     .summary-table td:last-child{font-weight:bold;}
+    /* 車齡資訊 */
+    .age-info-box{padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:14px;border-left:4px solid;}
+    .age-info-box.ok{background:#e8f5ec;border-color:#1a5c2a;color:#1a5c2a;}
+    .age-info-box.warn{background:#fff8e1;border-color:#f59e0b;color:#92400e;}
+    .age-info-box.err{background:#fff0f0;border-color:#c00;color:#c00;}
+    /* 模式切換 */
+    .mode-tabs{display:flex;gap:10px;margin-bottom:20px;}
+    .mode-tab{flex:1;padding:12px;border:2px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;font-size:14px;font-weight:bold;color:var(--muted);background:white;transition:all .2s;}
+    .mode-tab.active{border-color:var(--ford-blue);background:#eaf3ff;color:var(--ford-blue);}
+    .mode-section{display:none;}
+    .mode-section.active{display:block;}
+    /* 升級結果框 */
+    .upgrade-result-box{margin-top:14px;padding:16px;border-radius:10px;font-size:14px;display:none;}
+    .upgrade-result-box.ok{background:#e8f5ec;border:1px solid #a8d5b0;color:#1a5c2a;}
+    .upgrade-result-box.err{background:#fff0f0;border:1px solid #ffcccc;color:#c00;}
     #printArea{display:none;}
     @media print{
       body>*{display:none!important;}
       #printArea{display:block!important;position:static!important;}
       @page{size:A4 portrait;margin:8mm 10mm;}
     }
-    @media(max-width:600px){.row{grid-template-columns:1fr;}header h1{font-size:26px;}}
+    @media(max-width:600px){.row{grid-template-columns:1fr;}header h1{font-size:26px;}.mode-tabs{flex-direction:column;}}
   </style>
 </head>
 <body>
@@ -129,7 +144,9 @@
   <table class="pt">
     <tr><td>車牌號碼</td><td id="p_plate"></td><td>VIN車身號碼</td><td id="p_vin"></td></tr>
     <tr><td>車型</td><td id="p_model"></td><td>出廠年份</td><td id="p_year"></td></tr>
-    <tr><td>車齡月份</td><td id="p_carAge"></td><td>延長保固方案</td><td id="p_warranty"></td></tr>
+    <tr><td>領牌日期</td><td id="p_licenseDate"></td><td>車齡月份</td><td id="p_carAge"></td></tr>
+    <tr><td>申請類型</td><td id="p_applyType"></td><td>原始合約</td><td id="p_origContract"></td></tr>
+    <tr><td>保固方案</td><td id="p_warranty" colspan="3"></td></tr>
     <tr><td>方案費用</td><td id="p_price"></td><td>付款方式</td><td id="p_payMethod"></td></tr>
   </table>
   <h2>三、顧客注意事項</h2>
@@ -205,6 +222,8 @@
       <!-- Step 2 -->
       <div class="step-panel" id="step2">
         <h2>第 2 步：車輛與保固資料</h2>
+
+        <!-- 基本車輛資料 -->
         <div class="row">
           <div class="field"><label>車牌號碼</label><input type="text" id="f_plate" placeholder="若無資料可留空"></div>
           <div class="field"><label>VIN / 車身號碼</label><input type="text" id="f_vin" placeholder="若無資料可留空"></div>
@@ -214,41 +233,87 @@
             <label>車型 *</label>
             <select id="f_model" onchange="onModelChange()">
               <option value="">請選擇車型</option>
-              <option value="CX743">Territory</option>
-              <option value="C519">Focus</option>
-              <option value="CX482">Kuga</option>
-              <option value="C519ST">Focus ST</option>
-              <option value="S650_2.3">Mustang 2.3</option>
-              <option value="S650_5.0">Mustang 5.0</option>
-              <option value="P703_Raptor">Ranger Raptor</option>
-              <option value="P703_Diesel">Ranger</option>
-              <option value="V710">旅行家</option>
-              <option value="V761">旅玩家</option>
-              <option value="CX727">Mach-E</option>
+              <option value="CX743">Territory (CX743)</option>
+              <option value="C519">Focus (C519)</option>
+              <option value="CX482">Kuga (CX482)</option>
+              <option value="C519ST">Focus ST (C519ST)</option>
+              <option value="S650_2.3">Mustang 2.3 (S650)</option>
+              <option value="S650_5.0">Mustang 5.0 (S650)</option>
+              <option value="P703_Raptor">Ranger Raptor (P703)</option>
+              <option value="P703_Diesel">Ranger 柴油 (P703)</option>
+              <option value="V710">旅行家 (V710)</option>
+              <option value="V761">旅玩家 (V761)</option>
+              <option value="CX727">Mach-E (CX727)</option>
             </select>
           </div>
           <div class="field"><label>出廠年份</label><input type="text" id="f_year" placeholder="若無資料可留空"></div>
         </div>
-        <div class="row">
-          <div class="field">
-            <label>車齡月份 *</label>
-            <select id="f_carAge" onchange="updateWarrantyOptions()">
-              <option value="">請選擇車齡</option>
-              <option value="0-3">0 ~ 3 個月</option>
-              <option value="4-12">4 ~ 12 個月</option>
-              <option value="13-30">13 ~ 30 個月</option>
-              <option value="31-36">31 ~ 36 個月</option>
-            </select>
-            <div id="nonPersonalHint" class="info-tag" style="display:none;">⚠️ 非個人戶僅提供 0~3 個月內車齡方案</div>
+
+        <!-- 領牌日期 -->
+        <div class="field">
+          <label>領牌日期（選填，填入後自動計算車齡與可用方案）</label>
+          <input type="date" id="f_licenseDate" onchange="onLicenseDateChange()">
+        </div>
+        <div id="ageInfoBox" style="display:none;"></div>
+
+        <!-- 模式切換 (新合約 / 加購升級) -->
+        <div class="mode-tabs" id="modeTabs">
+          <div class="mode-tab active" id="tabNew" onclick="switchMode('new')">🎈 新合約</div>
+          <div class="mode-tab" id="tabUpgrade" onclick="switchMode('upgrade')">🆙 加購 / 升級</div>
+        </div>
+
+        <!-- 新合約模式 -->
+        <div class="mode-section active" id="modeNew">
+          <div class="row">
+            <div class="field">
+              <label>車齡月份 *</label>
+              <select id="f_carAge" onchange="updateWarrantyOptions()">
+                <option value="">請選擇車齡</option>
+                <option value="0-3">0 ~ 3 個月</option>
+                <option value="4-12">4 ~ 12 個月</option>
+                <option value="13-30">13 ~ 30 個月</option>
+                <option value="31-36">31 ~ 36 個月</option>
+              </select>
+              <div id="nonPersonalHint" class="info-tag" style="display:none;">⚠️ 非個人戶僅提供 0~3 個月內車齡方案</div>
+            </div>
+            <div class="field">
+              <label>延長保固方案 *</label>
+              <select id="f_warranty" onchange="showPrice()">
+                <option value="">請先選擇車型與車齡</option>
+              </select>
+            </div>
           </div>
-          <div class="field">
-            <label>延長保固方案 *</label>
-            <select id="f_warranty" onchange="showPrice()">
-              <option value="">請先選擇車型與車齡</option>
-            </select>
+          <div class="price-hint" id="priceHint">
+            方案費用：<strong id="priceValue"></strong>（參考價格，實際以正式報價為準）
           </div>
         </div>
-        <div class="field">
+
+        <!-- 加購/升級模式 -->
+        <div class="mode-section" id="modeUpgrade">
+          <div style="background:#fff8e1;border:1px solid #ffe58f;border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:#7a5c00;">
+            <strong>📋 加購/升級條件：</strong>
+            僅限個人戶 ｜ 加購：0~60個月 ｜ 升級：0~36個月<br>
+            目前加購/升級規則適用車型：<strong>CX743、C519、CX482</strong>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>原始合約 *</label>
+              <select id="f_origContract" onchange="onOrigContractChange()">
+                <option value="">請先選擇車型與領牌日期</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>加購 / 升級項目 *</label>
+              <select id="f_upgradeType" onchange="showUpgradePrice()">
+                <option value="">請先選擇原始合約</option>
+              </select>
+            </div>
+          </div>
+          <div id="upgradePriceBox" class="upgrade-result-box"></div>
+        </div>
+
+        <!-- 付款方式 -->
+        <div class="field" style="margin-top:14px;">
           <label>付款方式 *</label>
           <select id="f_payMethod">
             <option value="">請選擇付款方式</option>
@@ -257,9 +322,7 @@
             <option value="信用卡">信用卡</option>
           </select>
         </div>
-        <div class="price-hint" id="priceHint">
-          方案費用：<strong id="priceValue"></strong>（參考價格，實際以正式報價為準）
-        </div>
+
         <div id="err2" class="error-msg">請填寫所有必填欄位（*）</div>
         <div class="btn-row">
           <button class="btn btn-back" onclick="goStep(1)">← 上一步</button>
@@ -373,6 +436,7 @@
 <script>
 var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzo0wPnAruUEYKkfXLRNlSJURUKjT2svqOcNClKd1Ls5oRHCTB3I8Trdycu71DFh4Owhg/exec';
 
+// ── 價格資料 ──────────────────────────────────────────
 var prices = {
   'CX743': {
     '個人戶': {
@@ -472,6 +536,85 @@ var prices = {
   }
 };
 
+// ── 加購/升級規則 ────────────────────────────────────
+var upgradeRules = {
+  'CX743': {
+    '加值型一年': {
+      '加購加值型一年': {'0-36':6400,'37-60':7680,result:'加值型二年(24個月)'},
+      '加購加值型二年': {'0-36':10000,'37-60':12000,result:'加值型三年(36個月)'},
+      '升級全方位一年': {'0-36':12900,result:'全方位一年(12個月)'},
+      '升級全方位二年': {'0-36':26700,result:'全方位二年(24個月)'},
+      '升級全方位三年': {'0-36':37700,result:'全方位三年(36個月)'}
+    },
+    '加值型二年': {
+      '加購加值型一年': {'0-36':6400,'37-60':7680,result:'加值型三年(36個月)'},
+      '升級全方位二年': {'0-36':23100,result:'全方位二年(24個月)'},
+      '升級全方位三年': {'0-36':34100,result:'全方位三年(36個月)'}
+    },
+    '加值型三年': {
+      '升級全方位三年': {'0-36':30400,result:'全方位三年(36個月)'}
+    },
+    '全方位一年': {
+      '加購全方位一年': {'0-36':15500,'37-60':18600,result:'全方位二年(24個月)'},
+      '加購全方位二年': {'0-36':27600,'37-60':33120,result:'全方位三年(36個月)'}
+    },
+    '全方位二年': {
+      '加購全方位一年': {'0-36':15500,'37-60':18600,result:'全方位三年(36個月)'}
+    },
+    '全方位三年': {}
+  },
+  'C519': {
+    '加值型一年': {
+      '加購加值型一年': {'0-36':2730,'37-60':3280,result:'加值型二年(24個月)'},
+      '加購加值型二年': {'0-36':4040,'37-60':4850,result:'加值型三年(36個月)'},
+      '升級全方位一年': {'0-36':7450,result:'全方位一年(12個月)'},
+      '升級全方位二年': {'0-36':15000,result:'全方位二年(24個月)'},
+      '升級全方位三年': {'0-36':18800,result:'全方位三年(36個月)'}
+    },
+    '加值型二年': {
+      '加購加值型一年': {'0-36':2730,'37-60':3280,result:'加值型三年(36個月)'},
+      '升級全方位二年': {'0-36':13600,result:'全方位二年(24個月)'},
+      '升級全方位三年': {'0-36':17400,result:'全方位三年(36個月)'}
+    },
+    '加值型三年': {
+      '升級全方位三年': {'0-36':16500,result:'全方位三年(36個月)'}
+    },
+    '全方位一年': {
+      '加購全方位一年': {'0-36':7350,'37-60':8820,result:'全方位二年(24個月)'},
+      '加購全方位二年': {'0-36':13650,'37-60':16380,result:'全方位三年(36個月)'}
+    },
+    '全方位二年': {
+      '加購全方位一年': {'0-36':7350,'37-60':8820,result:'全方位三年(36個月)'}
+    },
+    '全方位三年': {}
+  },
+  'CX482': {
+    '加值型一年': {
+      '加購加值型一年': {'0-36':4700,'37-60':5640,result:'加值型二年(24個月)'},
+      '加購加值型二年': {'0-36':6600,'37-60':7920,result:'加值型三年(36個月)'},
+      '升級全方位一年': {'0-36':11200,result:'全方位一年(12個月)'},
+      '升級全方位二年': {'0-36':23200,result:'全方位二年(24個月)'},
+      '升級全方位三年': {'0-36':32750,result:'全方位三年(36個月)'}
+    },
+    '加值型二年': {
+      '加購加值型一年': {'0-36':4700,'37-60':5640,result:'加值型三年(36個月)'},
+      '升級全方位二年': {'0-36':21150,result:'全方位二年(24個月)'},
+      '升級全方位三年': {'0-36':30700,result:'全方位三年(36個月)'}
+    },
+    '加值型三年': {
+      '升級全方位三年': {'0-36':28700,result:'全方位三年(36個月)'}
+    },
+    '全方位一年': {
+      '加購全方位一年': {'0-36':14760,'37-60':17710,result:'全方位二年(24個月)'},
+      '加購全方位二年': {'0-36':24700,'37-60':29640,result:'全方位三年(36個月)'}
+    },
+    '全方位二年': {
+      '加購全方位一年': {'0-36':14760,'37-60':17710,result:'全方位三年(36個月)'}
+    },
+    '全方位三年': {}
+  }
+};
+
 var modelNames = {
   'CX743':'Territory','C519':'Focus','CX482':'Kuga','C519ST':'Focus ST',
   'S650_2.3':'Mustang 2.3','S650_5.0':'Mustang 5.0',
@@ -482,7 +625,10 @@ var modelNames = {
 var noNonPersonal = ['S650_2.3','S650_5.0','CX727'];
 var currentCaseNum='', formData={}, custSignURL='', salesSignURL='';
 var pads={};
+var currentMode='new'; // 'new' or 'upgrade'
+var calculatedAgeMonths=0, calculatedAgeRange='';
 
+// ── 簽名板 ───────────────────────────────────────────
 function initPad(id,canvasId){
   var c=document.getElementById(canvasId);
   var ctx=c.getContext('2d');
@@ -502,19 +648,91 @@ function initPad(id,canvasId){
   c.addEventListener('touchend',function(){drawing=false;});
   pads[id]={canvas:c,ctx:ctx,signed:false};
 }
-
-function clearSign(id){
-  pads[id].ctx.clearRect(0,0,pads[id].canvas.width,pads[id].canvas.height);
-  pads[id].signed=false;
-}
-
-window.addEventListener('load',function(){
-  initPad('cust','custCanvas');
-  initPad('sales','salesCanvas');
-});
+function clearSign(id){pads[id].ctx.clearRect(0,0,pads[id].canvas.width,pads[id].canvas.height);pads[id].signed=false;}
+window.addEventListener('load',function(){initPad('cust','custCanvas');initPad('sales','salesCanvas');});
 
 function v(id){return document.getElementById(id).value.trim();}
 
+// ── 車齡計算 ─────────────────────────────────────────
+function calcAgeFromDate(dateStr){
+  if(!dateStr) return null;
+  var today=new Date();
+  var license=new Date(dateStr+'T00:00:00');
+  var days=Math.floor((today-license)/(1000*60*60*24));
+  var months=Math.ceil((today-license)/(1000*60*60*24*30.44));
+  return {days:days, months:months};
+}
+
+function getAgeRange(months){
+  if(months<=3) return '0-3';
+  if(months<=12) return '4-12';
+  if(months<=30) return '13-30';
+  if(months<=36) return '31-36';
+  return 'over36';
+}
+
+function getUpgradeAgeKey(months){
+  if(months<=36) return '0-36';
+  if(months<=60) return '37-60';
+  return null;
+}
+
+function onLicenseDateChange(){
+  var dateStr=document.getElementById('f_licenseDate').value;
+  var custType=document.getElementById('f_custType').value;
+  var box=document.getElementById('ageInfoBox');
+
+  if(!dateStr){
+    box.style.display='none';
+    calculatedAgeMonths=0;calculatedAgeRange='';
+    return;
+  }
+
+  var age=calcAgeFromDate(dateStr);
+  calculatedAgeMonths=age.months;
+
+  var ageRange=getAgeRange(age.months);
+  calculatedAgeRange=ageRange;
+
+  var msg='';var cls='ok';
+
+  if(custType==='非個人戶' && age.days>30){
+    cls='err';
+    msg='❌ 非個人戶僅限領牌30天內購買，目前車齡 '+age.days+' 天，已超過限制';
+  } else if(age.months>60){
+    cls='err';
+    msg='❌ 車齡 '+age.months+' 個月，超過加購60個月限制，無法申請';
+  } else if(age.months>36){
+    cls='warn';
+    msg='⚠️ 車齡 '+age.months+' 個月（'+age.days+' 天）｜ 僅限加購（升級須36個月內）';
+    // 自動切換加購模式
+    switchMode('upgrade');
+  } else {
+    cls='ok';
+    msg='✅ 車齡 '+age.months+' 個月（'+age.days+' 天）｜ 可購買新合約或加購/升級';
+    // 自動更新車齡下拉
+    document.getElementById('f_carAge').value=ageRange;
+    updateWarrantyOptions();
+  }
+
+  box.className='age-info-box '+cls;
+  box.innerHTML=msg;
+  box.style.display='block';
+
+  // 更新加購模式的原始合約選單
+  updateOrigContractOptions();
+}
+
+// ── 模式切換 ─────────────────────────────────────────
+function switchMode(mode){
+  currentMode=mode;
+  document.getElementById('tabNew').classList.toggle('active', mode==='new');
+  document.getElementById('tabUpgrade').classList.toggle('active', mode==='upgrade');
+  document.getElementById('modeNew').classList.toggle('active', mode==='new');
+  document.getElementById('modeUpgrade').classList.toggle('active', mode==='upgrade');
+}
+
+// ── 新合約邏輯 ────────────────────────────────────────
 function onCustTypeChange(){
   var custType=document.getElementById('f_custType').value;
   var model=document.getElementById('f_model').value;
@@ -523,19 +741,18 @@ function onCustTypeChange(){
   if(custType==='非個人戶'&&noNonPersonal.indexOf(model)!==-1){
     alert(modelNames[model]+' 無非個人戶方案，已自動切換為個人戶。');
     document.getElementById('f_custType').value='個人戶';
-    hint.style.display='none';
-    return;
+    hint.style.display='none';return;
   }
   carAgeSel.innerHTML='<option value="">請選擇車齡</option>';
   if(custType==='非個人戶'){
     carAgeSel.innerHTML+='<option value="0-3">0 ~ 3 個月</option>';
-    carAgeSel.value='0-3';
-    hint.style.display='block';
+    carAgeSel.value='0-3';hint.style.display='block';
   } else {
     carAgeSel.innerHTML+='<option value="0-3">0 ~ 3 個月</option><option value="4-12">4 ~ 12 個月</option><option value="13-30">13 ~ 30 個月</option><option value="31-36">31 ~ 36 個月</option>';
     hint.style.display='none';
   }
   updateWarrantyOptions();
+  onLicenseDateChange();
 }
 
 function onModelChange(){
@@ -543,11 +760,10 @@ function onModelChange(){
   var custType=document.getElementById('f_custType').value;
   if(custType==='非個人戶'&&noNonPersonal.indexOf(model)!==-1){
     alert(modelNames[model]+' 無非個人戶方案，已自動切換為個人戶。');
-    document.getElementById('f_custType').value='個人戶';
-    onCustTypeChange();
-    return;
+    document.getElementById('f_custType').value='個人戶';onCustTypeChange();return;
   }
   updateWarrantyOptions();
+  updateOrigContractOptions();
 }
 
 function updateWarrantyOptions(){
@@ -580,23 +796,112 @@ function showPrice(){
   if(p){document.getElementById('priceValue').textContent='NT$ '+p.toLocaleString();hint.style.display='block';}
 }
 
+// ── 加購/升級邏輯 ─────────────────────────────────────
+function updateOrigContractOptions(){
+  var model=document.getElementById('f_model').value;
+  var sel=document.getElementById('f_origContract');
+  sel.innerHTML='<option value="">請先選擇車型與領牌日期</option>';
+  document.getElementById('f_upgradeType').innerHTML='<option value="">請先選擇原始合約</option>';
+  document.getElementById('upgradePriceBox').style.display='none';
+
+  if(!model||!upgradeRules[model]){
+    sel.innerHTML='<option value="">此車型暫無加購/升級規則</option>';return;
+  }
+  if(!document.getElementById('f_licenseDate').value){
+    sel.innerHTML='<option value="">請先填入領牌日期</option>';return;
+  }
+
+  var contracts=Object.keys(upgradeRules[model]);
+  sel.innerHTML='<option value="">請選擇原始合約</option>';
+  contracts.forEach(function(c){
+    if(Object.keys(upgradeRules[model][c]).length>0){
+      sel.innerHTML+='<option value="'+c+'">'+c+'</option>';
+    }
+  });
+}
+
+function onOrigContractChange(){
+  var model=document.getElementById('f_model').value;
+  var contract=document.getElementById('f_origContract').value;
+  var upgradeTypeSel=document.getElementById('f_upgradeType');
+  var box=document.getElementById('upgradePriceBox');
+  upgradeTypeSel.innerHTML='<option value="">請選擇加購/升級項目</option>';
+  box.style.display='none';
+
+  if(!model||!contract||!upgradeRules[model]||!upgradeRules[model][contract]) return;
+
+  var ageKey=getUpgradeAgeKey(calculatedAgeMonths);
+  var rules=upgradeRules[model][contract];
+
+  Object.keys(rules).forEach(function(upgradeType){
+    var data=rules[upgradeType];
+    var isUpgrade=upgradeType.indexOf('升級')!==-1;
+    // 升級僅限36個月內
+    if(isUpgrade && calculatedAgeMonths>36) return;
+    if(ageKey && data[ageKey]!==undefined){
+      var price=data[ageKey];
+      upgradeTypeSel.innerHTML+='<option value="'+upgradeType+'">'+upgradeType+' → '+data.result+'（NT$ '+price.toLocaleString()+'）</option>';
+    }
+  });
+
+  if(upgradeTypeSel.options.length===1){
+    upgradeTypeSel.innerHTML='<option value="">❌ 此車齡無可用加購/升級項目</option>';
+  }
+}
+
+function showUpgradePrice(){
+  var model=document.getElementById('f_model').value;
+  var contract=document.getElementById('f_origContract').value;
+  var upgradeType=document.getElementById('f_upgradeType').value;
+  var box=document.getElementById('upgradePriceBox');
+  if(!model||!contract||!upgradeType){box.style.display='none';return;}
+
+  var ageKey=getUpgradeAgeKey(calculatedAgeMonths);
+  var data=upgradeRules[model]&&upgradeRules[model][contract]&&upgradeRules[model][contract][upgradeType];
+  if(!data||!ageKey||data[ageKey]===undefined){
+    box.className='upgrade-result-box err';
+    box.innerHTML='❌ 無法查詢此方案價格，請確認車齡與合約';
+    box.style.display='block';return;
+  }
+
+  var price=data[ageKey];
+  box.className='upgrade-result-box ok';
+  box.innerHTML='✅ <strong>'+upgradeType+'</strong> → 升級後方案：'+data.result+'<br>費用：<strong>NT$ '+price.toLocaleString()+'</strong>';
+  box.style.display='block';
+}
+
+// ── Step 驗證 ─────────────────────────────────────────
 function validateStep1(){
   var email=v('f_email');
   var emailOK=email!==''&&email.indexOf('@')!==-1&&email.indexOf('.')!==-1;
   if(!v('f_name')||!v('f_phone')||!emailOK||!document.getElementById('f_custType').value){
     document.getElementById('err1').style.display='block';return;
   }
-  document.getElementById('err1').style.display='none';
-  goStep(2);
+  document.getElementById('err1').style.display='none';goStep(2);
 }
 
 function validateStep2(){
-  if(!document.getElementById('f_model').value||!document.getElementById('f_carAge').value||
-     !document.getElementById('f_warranty').value||!document.getElementById('f_payMethod').value){
-    document.getElementById('err2').style.display='block';return;
+  var model=document.getElementById('f_model').value;
+  var payMethod=document.getElementById('f_payMethod').value;
+  var err=document.getElementById('err2');
+
+  if(!model||!payMethod){err.innerHTML='請填寫所有必填欄位（*）';err.style.display='block';return;}
+
+  if(currentMode==='new'){
+    var carAge=document.getElementById('f_carAge').value;
+    var warranty=document.getElementById('f_warranty').value;
+    if(!carAge||!warranty){err.innerHTML='請選擇車齡與保固方案';err.style.display='block';return;}
+  } else {
+    var origContract=document.getElementById('f_origContract').value;
+    var upgradeType=document.getElementById('f_upgradeType').value;
+    if(!origContract||!upgradeType||upgradeType.indexOf('❌')!==-1){
+      err.innerHTML='請選擇原始合約與加購/升級項目';err.style.display='block';return;
+    }
+    var ageKey=getUpgradeAgeKey(calculatedAgeMonths);
+    if(!ageKey){err.innerHTML='車齡超過60個月，無法加購/升級';err.style.display='block';return;}
   }
-  document.getElementById('err2').style.display='none';
-  goStep(3);
+
+  err.style.display='none';goStep(3);
 }
 
 function validateStep3(){
@@ -624,38 +929,71 @@ function goStep(n){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
+// ── 摘要與資料收集 ────────────────────────────────────
 function getSelectedPrice(){
+  if(currentMode==='new'){
+    var model=document.getElementById('f_model').value;
+    var custType=document.getElementById('f_custType').value;
+    var carAge=document.getElementById('f_carAge').value;
+    var plan=document.getElementById('f_warranty').value;
+    if(!model||!custType||!carAge||!plan)return'-';
+    var p=prices[model]&&prices[model][custType]&&prices[model][custType][carAge]&&prices[model][custType][carAge][plan];
+    return p?'NT$ '+p.toLocaleString():'-';
+  } else {
+    var model2=document.getElementById('f_model').value;
+    var contract=document.getElementById('f_origContract').value;
+    var upgradeType=document.getElementById('f_upgradeType').value;
+    if(!model2||!contract||!upgradeType)return'-';
+    var ageKey=getUpgradeAgeKey(calculatedAgeMonths);
+    var data=upgradeRules[model2]&&upgradeRules[model2][contract]&&upgradeRules[model2][contract][upgradeType];
+    if(!data||!ageKey||data[ageKey]===undefined)return'-';
+    return 'NT$ '+data[ageKey].toLocaleString();
+  }
+}
+
+function getWarrantyLabel(){
+  if(currentMode==='new') return document.getElementById('f_warranty').value;
+  var upgradeType=document.getElementById('f_upgradeType').value;
   var model=document.getElementById('f_model').value;
-  var custType=document.getElementById('f_custType').value;
-  var carAge=document.getElementById('f_carAge').value;
-  var plan=document.getElementById('f_warranty').value;
-  if(!model||!custType||!carAge||!plan)return'-';
-  var p=prices[model]&&prices[model][custType]&&prices[model][custType][carAge]&&prices[model][custType][carAge][plan];
-  return p?'NT$ '+p.toLocaleString():'-';
+  var contract=document.getElementById('f_origContract').value;
+  var data=upgradeRules[model]&&upgradeRules[model][contract]&&upgradeRules[model][contract][upgradeType];
+  return upgradeType+(data?' → '+data.result:'');
 }
 
 function buildSummary(){
   var modelCode=document.getElementById('f_model').value;
   var carAgeMap={'0-3':'0~3個月','4-12':'4~12個月','13-30':'13~30個月','31-36':'31~36個月'};
+  var licenseDateVal=document.getElementById('f_licenseDate').value;
+  var licenseDateLabel=licenseDateVal?licenseDateVal.replace(/-/g,'/'):'（未填寫）';
+
   var rows=[
     ['車主姓名',v('f_name')],
     ['聯絡電話',v('f_phone')],
     ['Email',document.getElementById('f_email').value],
     ['顧客類別',document.getElementById('f_custType').value],
-    ['車牌號碼',v('f_plate')||'（新車等待配車）'],
-    ['VIN',v('f_vin')||'（新車等待配車）'],
+    ['車牌號碼',v('f_plate')||'新車等待配車'],
+    ['VIN',v('f_vin')||'新車等待配車'],
     ['車型',modelNames[modelCode]||modelCode],
-    ['出廠年份',v('f_year')||'（-）'],
-    ['車齡月份',carAgeMap[document.getElementById('f_carAge').value]||''],
-    ['保固方案',document.getElementById('f_warranty').value],
-    ['方案費用',getSelectedPrice()],
-    ['付款方式',document.getElementById('f_payMethod').value]
+    ['出廠年份',v('f_year')||'新車等待配車'],
+    ['領牌日期',licenseDateLabel],
+    ['申請類型',currentMode==='new'?'🎈 新合約':'🆙 加購/升級'],
   ];
+
+  if(currentMode==='new'){
+    rows.push(['車齡月份',carAgeMap[document.getElementById('f_carAge').value]||'']);
+    rows.push(['保固方案',document.getElementById('f_warranty').value]);
+  } else {
+    rows.push(['車齡月份',calculatedAgeMonths+'個月']);
+    rows.push(['原始合約',document.getElementById('f_origContract').value]);
+    rows.push(['加購/升級項目',getWarrantyLabel()]);
+  }
+
+  rows.push(['方案費用',getSelectedPrice()]);
+  rows.push(['付款方式',document.getElementById('f_payMethod').value]);
+
   var html='<div style="font-size:13px;color:#003478;font-weight:bold;margin-bottom:12px;">📋 顧客填寫內容確認</div>';
   html+='<table class="summary-table">';
-  rows.forEach(function(r){
-    html+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>';
-  });
+  rows.forEach(function(r){html+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>';});
   html+='</table>';
   document.getElementById('summary').innerHTML=html;
 }
@@ -665,6 +1003,19 @@ function collectFormData(){
   var ds=now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate();
   var modelCode=document.getElementById('f_model').value;
   var carAgeMap={'0-3':'0~3個月','4-12':'4~12個月','13-30':'13~30個月','31-36':'31~36個月'};
+  var licenseDateVal=document.getElementById('f_licenseDate').value;
+
+  var warrantyLabel, carAgeLabel, origContract;
+  if(currentMode==='new'){
+    warrantyLabel=document.getElementById('f_warranty').value;
+    carAgeLabel=carAgeMap[document.getElementById('f_carAge').value]||document.getElementById('f_carAge').value;
+    origContract='-';
+  } else {
+    origContract=document.getElementById('f_origContract').value;
+    warrantyLabel=getWarrantyLabel();
+    carAgeLabel=calculatedAgeMonths+'個月';
+  }
+
   formData={
     applyDate:ds,
     name:v('f_name'),
@@ -675,9 +1026,12 @@ function collectFormData(){
     vin:v('f_vin')||'新車等待配車',
     modelCode:modelCode,
     model:modelNames[modelCode]||modelCode,
-    year:v('f_year')||'-',
-    carAge:carAgeMap[document.getElementById('f_carAge').value]||document.getElementById('f_carAge').value,
-    warranty:document.getElementById('f_warranty').value,
+    year:v('f_year')||'新車等待配車',
+    licenseDate:licenseDateVal?licenseDateVal.replace(/-/g,'/'):'',
+    applyType:currentMode==='new'?'新合約':'加購/升級',
+    origContract:origContract,
+    carAge:carAgeLabel,
+    warranty:warrantyLabel,
     price:getSelectedPrice(),
     payMethod:document.getElementById('f_payMethod').value,
     dealerName:document.getElementById('f_dealerName').value,
@@ -710,17 +1064,13 @@ function submitForm(){
   fetch(APPS_SCRIPT_URL,{method:'POST',body:form})
     .then(function(res){return res.text();})
     .then(function(text){
-      try{
-        var json=JSON.parse(text);
-        currentCaseNum=json.caseNum||'';
-        showSuccess(json.status==='success',currentCaseNum);
-      }catch(err){
-        showSuccess(true,'');
-      }
+      try{var json=JSON.parse(text);currentCaseNum=json.caseNum||'';showSuccess(json.status==='success',currentCaseNum);}
+      catch(err){showSuccess(true,'');}
     })
     .catch(function(){showSuccess(false,'');});
 }
 
+// ── PDF 列印 ─────────────────────────────────────────
 function downloadPDF(){
   var now=new Date();
   var ds=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日';
@@ -736,7 +1086,10 @@ function downloadPDF(){
   document.getElementById('p_vin').textContent=formData.vin;
   document.getElementById('p_model').textContent=formData.model;
   document.getElementById('p_year').textContent=formData.year;
+  document.getElementById('p_licenseDate').textContent=formData.licenseDate||'-';
   document.getElementById('p_carAge').textContent=formData.carAge;
+  document.getElementById('p_applyType').textContent=formData.applyType;
+  document.getElementById('p_origContract').textContent=formData.origContract||'-';
   document.getElementById('p_warranty').textContent=formData.warranty;
   document.getElementById('p_price').textContent=formData.price;
   document.getElementById('p_payMethod').textContent=formData.payMethod;
@@ -762,8 +1115,9 @@ function doPrint(){
   setTimeout(function(){pa.style.display='none';pa.style.transform='';pa.style.width='';},1500);
 }
 
+// ── 重設表單 ─────────────────────────────────────────
 function resetForm(){
-  ['f_name','f_phone','f_email','f_plate','f_vin','f_year','f_salesName'].forEach(function(id){
+  ['f_name','f_phone','f_email','f_plate','f_vin','f_year','f_salesName','f_licenseDate'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.value='';
   });
   ['f_model','f_custType','f_dealerName','f_payMethod'].forEach(function(id){
@@ -771,23 +1125,4 @@ function resetForm(){
   });
   document.getElementById('f_carAge').innerHTML='<option value="">請選擇車齡</option><option value="0-3">0 ~ 3 個月</option><option value="4-12">4 ~ 12 個月</option><option value="13-30">13 ~ 30 個月</option><option value="31-36">31 ~ 36 個月</option>';
   document.getElementById('f_warranty').innerHTML='<option value="">請先選擇車型與車齡</option>';
-  document.getElementById('agreeCheck').checked=false;
-  document.getElementById('priceHint').style.display='none';
-  document.getElementById('nonPersonalHint').style.display='none';
-  var btn=document.getElementById('btnSubmit');
-  btn.disabled=false;btn.textContent='✅ 確認送出申請';
-  clearSign('cust');clearSign('sales');
-  custSignURL='';salesSignURL='';currentCaseNum='';formData={};
-  document.getElementById('progress').style.display='flex';
-  ['ps1','ps2','ps3','ps4'].forEach(function(id,i){
-    var el=document.getElementById(id);el.classList.remove('active','done');if(i===0)el.classList.add('active');
-  });
-  ['1','2','3','4','Loading','Success'].forEach(function(s){
-    var el=document.getElementById('step'+s);if(el)el.classList.remove('active');
-  });
-  document.getElementById('step1').classList.add('active');
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-</script>
-</body>
-</html>
+  document.getElementById('f_origContract').innerHTML='<option value="">請先選
